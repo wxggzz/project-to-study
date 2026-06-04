@@ -20,6 +20,12 @@ repository. This package is a worked example of what the skill produces.
 - [Troubleshooting](09-troubleshooting.md)
 - [Maintenance and Contribution](10-maintenance-and-contribution.md)
 
+## AI-ready manifest
+
+- [`index.json`](index.json) — a machine-readable map of this package
+  (documents, commands, env-var names, confidence counts, unknowns) for agents
+  and automation.
+
 ## Evidence
 
 - [Source map](_evidence/source-map.md)

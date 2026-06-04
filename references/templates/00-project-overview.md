@@ -1,26 +1,35 @@
 # Project Overview
 
-## What This Project Does
+> Audience: maintainers, new contributors, product owners.
+> Signature payoff: a reader knows *what this is*, *what breaks if it's down*,
+> and *who owns it* — in under a minute.
 
-Describe the project in plain language.
+## What This Project Is
 
-## Who Uses It
+<One or two plain sentences. No jargon on first use without a gloss.>
 
-Explain the likely user or operator.
+## What It's For
 
-## Main Capabilities
+<The user-facing job / main workflows it supports.>
 
-- Capability 1
-- Capability 2
-- Capability 3
+## What Breaks If It's Down
+
+<Concrete impact if this stops working — who/what is affected. If unclear,
+say so: "Impact not documented (Needs confirmation)." Do not invent severity.>
+
+## Ownership
+
+| Role | Who / where | Evidence |
+| --- | --- | --- |
+| Maintainers | <names, CODEOWNERS, or "Unknown"> | <CODEOWNERS / README / Unknown> |
 
 ## Tech Stack
 
 | Area | Technology | Evidence | Confidence |
 | --- | --- | --- | --- |
-| Runtime | TBD | TBD | Unknown |
-| Framework | TBD | TBD | Unknown |
-| Database | TBD | TBD | Unknown |
+| Language | <e.g. Python 3.11> | <pyproject.toml / file census> | Verified |
+| Framework | <e.g. FastAPI> | <dependency manifest> | Inferred |
+| Data store | <e.g. PostgreSQL> | <dependency / schema> | Inferred |
 
 ## Important Files
 
@@ -30,5 +39,4 @@ Explain the likely user or operator.
 
 ## What To Read Next
 
-Start with `01-quickstart.md`, then read `05-code-introduction.md`.
-
+Start with `01-quickstart.md`, then `05-code-introduction.md`.

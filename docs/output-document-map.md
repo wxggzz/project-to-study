@@ -12,6 +12,18 @@ Purpose:
 - link every generated manual
 - state generation date, target path, and confidence notes
 
+## `index.json`
+
+Audience: AI agents and automation (and any tool that wants the package without
+parsing prose).
+
+Purpose:
+
+- a machine-readable manifest of the package
+- document list (file, title, audience), verified commands, env-var names
+- confidence counts, unknowns, evidence files, and optional routes/entities
+- always generated; keep it factual (see the shape in `SKILL.md`)
+
 ## `00-project-overview.md`
 
 Audience: product owners, maintainers, new contributors.

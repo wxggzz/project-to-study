@@ -1,0 +1,43 @@
+{
+  "schema": "1",
+  "name": "project-to-study (CLI)",
+  "generated_at": "2026-06-04",
+  "source": "project-to-study @ cli branch",
+  "generated_by": "project-to-study skill",
+  "documents": [
+    { "file": "00-project-overview.md", "title": "Project Overview", "audience": "maintainers" },
+    { "file": "01-quickstart.md", "title": "Quickstart", "audience": "anyone running it" },
+    { "file": "02-operation-manual.md", "title": "Operation Manual", "audience": "operators" },
+    { "file": "03-deployment-manual.md", "title": "Deployment Manual", "audience": "deployers" },
+    { "file": "04-learning-manual.md", "title": "Learning Manual", "audience": "learners and AI builders" },
+    { "file": "05-code-introduction.md", "title": "Code Introduction", "audience": "developers and AI agents" },
+    { "file": "06-architecture.md", "title": "Architecture", "audience": "technical maintainers" },
+    { "file": "07-api-and-integrations.md", "title": "API and Integrations", "audience": "developers" },
+    { "file": "08-data-model.md", "title": "Data Model", "audience": "developers" },
+    { "file": "09-troubleshooting.md", "title": "Troubleshooting", "audience": "anyone debugging" },
+    { "file": "10-maintenance-and-contribution.md", "title": "Maintenance and Contribution", "audience": "contributors and AI agents" }
+  ],
+  "commands": {
+    "install": "pip install -e \".[dev]\"",
+    "run": "project-to-study <path> --out study-docs",
+    "test": "pytest -q"
+  },
+  "env_var_names": [],
+  "confidence": {
+    "verified": 14,
+    "inferred": 1,
+    "unknown": 0,
+    "needs_confirmation": 1
+  },
+  "unknowns": [
+    "Intended distribution channel (PyPI name/owner), if any.",
+    "Versioning/release cadence beyond the current 0.1.0."
+  ],
+  "evidence_files": [
+    "_evidence/source-map.md",
+    "_evidence/assumptions.md",
+    "_evidence/generation-log.md"
+  ],
+  "routes": [],
+  "entities": []
+}

@@ -1,19 +1,87 @@
 # project-to-study
 
-A Claude Code **skill** that turns any codebase into a structured Markdown
-**study-docs package** — operation, deployment, learning, architecture, code
-introduction, API/data, and troubleshooting manuals — with an evidence trail.
+> **Turn any codebase into evidence-grounded docs your team and AI agents can trust — a Claude Code skill.**
 
-Inspired by [`codebase-to-course`](https://github.com/zarazhangrui/codebase-to-course):
-same skill pattern (a strong `SKILL.md` + reusable references and templates), but
-the output is durable Markdown documentation a team can use for onboarding,
-operations, and AI-agent handoff — not an HTML course.
+Every claim cites its source. It **never invents deployment steps**. Output is
+Markdown **+ a machine-readable `index.json`** — AI-ready and living in your repo.
+
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-8A2BE2)
+![Output](https://img.shields.io/badge/output-Markdown%20%2B%20JSON-blue)
+
+**The problem:** AI doc generators hallucinate deployment steps and quietly go
+stale. **project-to-study** generates documentation where every operational
+claim is labelled `Verified` / `Inferred` / `Unknown` / `Needs confirmation` and
+tied to the file it came from — and it *refuses* to write steps it can't source.
+
+## How It Works
+
+```mermaid
+flowchart LR
+  Repo["Any repo (path or Git URL)"] --> P1["1. Analyze"]
+  P1 --> P2["2. Evidence map"]
+  P2 --> P3["3. Write manuals"]
+  P3 --> P4["4. Quality check"]
+  P4 --> MD["study-docs/*.md — for humans"]
+  P4 --> IDX["study-docs/index.json — for AI agents"]
+  P4 --> EV["_evidence/ — source map, assumptions, log"]
+```
+
+## What It Looks Like
+
+Every operational claim carries its evidence and confidence — and gaps are stated
+plainly instead of guessed:
+
+| Claim | Evidence | Confidence |
+| --- | --- | --- |
+| `npm run dev` starts the app | `package.json` `scripts.dev` | Verified |
+| Tests run with `pytest` | `pyproject.toml` dev deps + `tests/` | Verified |
+| Deploys to a managed host | — | **Unknown — not documented in the repo** |
+
+See [`examples/study-docs/`](examples/study-docs/) for a complete, validated
+sample (the skill documenting this project's own CLI).
+
+## Install (as a Claude Code skill)
+
+```bash
+git clone https://github.com/wxggzz/project-to-study
+mkdir -p ~/.claude/skills/project-to-study
+cp -R project-to-study/SKILL.md project-to-study/references ~/.claude/skills/project-to-study/
+```
+
+Then **reload/restart Claude Code** — skills are discovered at startup. (Prefer
+a live link? `ln -s "$(pwd)/project-to-study" ~/.claude/skills/project-to-study`.)
+
+## Use
+
+```text
+/project-to-study           # or: "use project-to-study to document ./my-app"
+```
+
+Give it a local path, a Git URL (cloned to a temp dir), or nothing (uses the
+current directory). Output lands in `study-docs/`.
+
+## project-to-study vs codebase-to-course
+
+Both are Claude Code skills that read a repo — they aim at different jobs.
+
+| | [codebase-to-course](https://github.com/zarazhangrui/codebase-to-course) | **project-to-study** |
+| --- | --- | --- |
+| Output | Interactive HTML course | Repo-native Markdown **+ `index.json`** |
+| Audience | Learners / non-technical | Engineers, operators, **AI agents** |
+| Lifespan | One-off artifact | Versioned; diffs in PRs |
+| Trust | Narrative explanation | Every claim cited + confidence + gaps |
+| Use it when… | You want to *teach how the code works* | You want to *operate / deploy / maintain / hand off* |
+
+It is an *AI-ready project knowledge base*: durable docs for onboarding,
+operations, and AI-agent handoff.
 
 ## What It Produces
 
 ```text
 study-docs/
   README.md                       # index + generation date + confidence notes
+  index.json                      # machine-readable manifest (AI-ready)
   00-project-overview.md
   01-quickstart.md
   02-operation-manual.md
@@ -29,66 +97,20 @@ study-docs/
   _evidence/                      # source-map, assumptions, generation-log
 ```
 
-Each manual has a clear audience and a practical next step. See
-[`docs/output-document-map.md`](docs/output-document-map.md) for what each file
-covers, and [`examples/study-docs/`](examples/study-docs/) for a complete worked
-sample (the skill documenting this project's own CLI).
+See [`docs/output-document-map.md`](docs/output-document-map.md) for what each
+file covers.
 
-## Install
-
-Install it as a personal Claude Code skill by copying `SKILL.md` and
-`references/` into `~/.claude/skills/project-to-study/`:
-
-```bash
-git clone https://github.com/wxggzz/project-to-study
-cd project-to-study
-mkdir -p ~/.claude/skills/project-to-study
-cp SKILL.md ~/.claude/skills/project-to-study/
-cp -R references ~/.claude/skills/project-to-study/
-```
-
-Or symlink it so the skill tracks the repo (no re-copy after updates):
-
-```bash
-ln -s "$(pwd)" ~/.claude/skills/project-to-study
-```
-
-Then **reload/restart Claude Code** — skills are discovered at startup.
-
-## Use
-
-Run it from the Claude Code prompt:
-
-```text
-/project-to-study
-```
-
-…or just ask in natural language:
-
-```text
-Use project-to-study to generate study docs for ./my-app
-```
-
-- If you give a **GitHub URL**, it is cloned into a temporary directory first.
-- If you say "this project" or give no path, the current directory is used.
-
-Claude reads `SKILL.md` and works in four phases: analyze the codebase → build a
-source map and assumptions → write the manuals from `references/templates/` →
-run a quality check. Output lands in `study-docs/`.
-
-## Design Principles
+## Why Trust It
 
 - **Evidence over invention.** Every operational/deployment claim cites its
-  source (a script, config, or test) and a confidence label: `Verified`,
-  `Inferred`, `Unknown`, or `Needs confirmation`.
-- **Never invent deployment steps.** If the repo doesn't document deployment,
-  the docs say so instead of guessing.
-- **Never expose secret values.** Environment variables are documented by
-  **name only**.
-- **Document the gaps.** Missing or ambiguous information is recorded in
-  `_evidence/assumptions.md`, not glossed over.
-- **Readable on GitHub.** Plain Markdown, tables, and Mermaid — no custom
-  styling required.
+  source and a confidence label (`Verified` / `Inferred` / `Unknown` /
+  `Needs confirmation`).
+- **Never invents deployment steps.** No deployment config in the repo? The docs
+  say so — they don't guess.
+- **Secrets stay secret.** Environment variables are documented by **name only**.
+- **Gaps are documented**, in `_evidence/assumptions.md`, not glossed over.
+- **AI-ready.** `index.json` gives agents a structured map of docs, commands,
+  env-var names, confidence counts, and unknowns.
 
 ## Repository Layout
 
@@ -99,20 +121,19 @@ project-to-study/
     analysis-checklist.md         # what to extract before writing
     markdown-style-guide.md       # formatting + evidence conventions
     handoff-protocol.md           # confidence labels + agent handoff
-    templates/                    # one scaffold per output document
-  prompts/
-    generate-study-docs.md        # ready-to-paste invocation prompt
-  docs/
-    output-document-map.md        # what each generated document is for
+    templates/                    # one opinionated scaffold per output document
+  prompts/generate-study-docs.md  # ready-to-paste invocation prompt
+  docs/output-document-map.md     # what each generated document is for
+  examples/study-docs/            # a complete, validated sample
 ```
 
 ## Deterministic CLI (optional)
 
-A dependency-free Python CLI that produces the same `study-docs/` layout
-deterministically and offline (handy for CI) lives on the
+Prefer a zero-dependency, offline run (e.g. in CI)? A Python CLI that produces
+the same `study-docs/` layout deterministically lives on the
 [`cli`](https://github.com/wxggzz/project-to-study/tree/cli) branch. The skill
 above is the primary, recommended way to use this project.
 
 ## License
 
-MIT
+[MIT](LICENSE)

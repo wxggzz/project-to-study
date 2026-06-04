@@ -35,6 +35,7 @@ The default output files are:
 ```text
 study-docs/
   README.md
+  index.json                       # machine-readable manifest (always write this)
   00-project-overview.md
   01-quickstart.md
   02-operation-manual.md
@@ -55,6 +56,32 @@ study-docs/
 
 Skip files that clearly do not apply, but explain the omission in
 `_evidence/assumptions.md`.
+
+### AI-ready manifest: `index.json`
+
+Always write `study-docs/index.json` — a structured map so AI agents (and future
+automation) can consume the package without parsing prose. Keep it small and
+factual; do not invent fields. Minimum shape:
+
+```json
+{
+  "schema": "1",
+  "name": "<project name>",
+  "generated_at": "<YYYY-MM-DD>",
+  "source": "<path or repo URL>",
+  "documents": [{ "file": "00-project-overview.md", "title": "Project Overview", "audience": "maintainers" }],
+  "commands": { "install": "...", "run": "...", "test": "..." },
+  "env_var_names": ["DATABASE_URL"],
+  "confidence": { "verified": 0, "inferred": 0, "unknown": 0, "needs_confirmation": 0 },
+  "unknowns": ["No deployment config found in the repo."],
+  "evidence_files": ["_evidence/source-map.md", "_evidence/assumptions.md", "_evidence/generation-log.md"],
+  "routes": [],
+  "entities": []
+}
+```
+
+`routes` and `entities` are optional — include them only when the project
+exposes an API or defines data models.
 
 ## Phase 1: Analyze The Codebase
 
@@ -124,6 +151,60 @@ Before finishing:
 - Mark unverified deployment details as assumptions.
 - Ensure every document has a clear audience and practical next step.
 - Keep the Markdown readable in GitHub without custom styling.
+
+## Quality Bar: Match These Examples
+
+The single rule that makes this skill trustworthy: **state evidence and
+confidence, and never invent what you cannot source.** Match the style below.
+
+### Evidence lines
+
+Good — sourced and labelled:
+
+```text
+Start the dev server with `npm run dev`.
+Evidence: package.json `scripts.dev`
+Confidence: Verified
+```
+
+Bad — an unsourced assertion:
+
+```text
+Start the dev server with `npm run dev`. The app runs on port 3000.
+```
+
+(Why it's bad: the command isn't tied to a file, and the port is asserted with
+no evidence. If the port comes from `.env.example`, cite it; otherwise mark it
+`Unknown`.)
+
+### Deployment when nothing is documented
+
+Good — refuses to invent, records the gap:
+
+```text
+## Deployment Summary
+No deployment configuration was found in this repository (no Dockerfile, CI
+workflow, or hosting config). Deployment steps are therefore unknown.
+Confidence: Unknown — recorded in `_evidence/assumptions.md`.
+```
+
+Bad — hallucinated steps:
+
+```text
+## Deployment Steps
+1. Push to main; CI builds a Docker image and deploys to AWS ECS.
+2. Run database migrations on the production cluster.
+```
+
+(Why it's bad: there is no Docker/CI/AWS evidence in the repo. Inventing a
+plausible pipeline is the exact failure this skill exists to prevent.)
+
+### Gold standard
+
+Treat [`examples/study-docs/`](examples/study-docs/) as the reference output to
+match — note how it cites sources, labels confidence, lists fields/routes with
+their source files, and states "not applicable / not found" honestly for
+sections that don't apply.
 
 ## Tone
 

@@ -1,37 +1,50 @@
 # Deployment Manual
 
+> Audience: deployers and infrastructure owners.
+> Signature payoff: either a **verified deployment path** (with evidence) or an
+> explicit **"deployment not found"** — never invented steps.
+
 ## Deployment Summary
 
-State the discovered deployment target. If none is discovered, say so clearly.
+Use exactly one of these two shapes.
+
+**A) Deployment found** — describe the discovered target with evidence:
+
+> Deploys via <Docker / Vercel / GitHub Actions / …>.
+> Evidence: <Dockerfile / .github/workflows/deploy.yml / vercel.json>
+> Confidence: Verified
+
+**B) No deployment found** — state it plainly:
+
+> No deployment configuration was found in this repository (no Dockerfile, CI
+> workflow, or hosting config). Deployment is therefore undocumented.
+> Confidence: Unknown — recorded in `_evidence/assumptions.md`.
 
 ## Build
 
 ```bash
-# Replace with verified build command
+<verified build command, or "# no build step detected">
 ```
 
-Evidence: TBD
-Confidence: Unknown
+Evidence: <source>
+Confidence: <Verified / Inferred / Unknown>
 
 ## Required Environment
 
 | Variable | Purpose | Required | Evidence |
 | --- | --- | --- | --- |
-| TBD | TBD | TBD | TBD |
+| `EXAMPLE_VAR` | <purpose> | Yes/No | <source> |
 
 ## Deployment Steps
 
-1. Prepare environment variables.
-2. Build the project.
-3. Deploy using the verified deployment mechanism.
-4. Run post-deployment checks.
+<Only if shape A. List steps that the evidence supports. If shape B, write:
+"No deployment steps can be derived from the repository.">
 
 ## Rollback
 
-Describe rollback if the repository provides evidence. Otherwise mark as
-`Needs confirmation`.
+<Only if the repo provides evidence; otherwise: "Unknown — Needs confirmation.">
 
 ## Deployment Unknowns
 
-List missing information the user should confirm.
-
+- <Hosting target, secret management, release approval, rollback — whatever the
+  repo does not answer.>
