@@ -165,6 +165,44 @@ and listed in `07-api-and-integrations.md` and `08-data-model.md`, each with its
 source file as evidence. For block schemas (Prisma, Protobuf, GraphQL) the
 entity tables also list field names.
 
+## Use As A Claude Code Skill
+
+Besides the CLI, this repo ships a Claude Code **skill** (`SKILL.md` +
+`references/`), the same pattern as `codebase-to-course`. Installed, it becomes a
+`/project-to-study` slash command: Claude reads `SKILL.md` and generates the docs
+itself (more adaptive prose), optionally calling the CLI to extract facts first.
+
+Install it as a personal skill by copying `SKILL.md` and `references/` into
+`~/.claude/skills/project-to-study/`:
+
+```bash
+# From the repository root
+mkdir -p ~/.claude/skills/project-to-study
+cp SKILL.md ~/.claude/skills/project-to-study/
+cp -R references ~/.claude/skills/project-to-study/
+```
+
+Or symlink it so the skill tracks the repo (no re-copy after updates):
+
+```bash
+ln -s "$(pwd)" ~/.claude/skills/project-to-study
+```
+
+Then **reload/restart Claude Code** (skills are discovered at startup). After
+that, run it from the prompt:
+
+```text
+/project-to-study
+```
+
+or trigger it in natural language, e.g. "use project-to-study to generate study
+docs for /path/to/repo". The resulting layout matches the CLI output above.
+
+> Skill vs CLI: the skill is Claude-driven (adaptive, richer narrative); the CLI
+> is deterministic and offline (CI-friendly, templated prose). They are
+> complementary — a skill run can call the CLI to pin facts, then write around
+> them. If you installed by copying (not symlinking), re-copy after repo updates.
+
 ## MVP Definition
 
 The first useful version does not need a complex app. It only needs to:
