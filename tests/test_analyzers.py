@@ -171,6 +171,54 @@ def test_protobuf_oneof_fields_not_truncated(tmp_path):
     assert fields == ["text", "number", "id"]
 
 
+# --- Regression tests for Codex PR #1 re-review findings ------------------ #
+
+def test_commented_fastapi_decorator_is_ignored(tmp_path):
+    repo = _write(
+        tmp_path, "main.py",
+        "from fastapi import FastAPI\n"
+        "app = FastAPI()\n\n"
+        "# @app.get('/debug')\n"
+        "def helper():\n"
+        "    return 1\n",
+    )
+    routes = scan(repo).routes
+    # The commented-out decorator must not bind to helper().
+    assert routes == []
+
+
+def test_flask_methods_after_nested_call_kwarg(tmp_path):
+    repo = _write(
+        tmp_path, "views.py",
+        "from flask import Flask\n"
+        "app = Flask(__name__)\n\n"
+        "@app.route('/p', defaults=dict(page=1), methods=['POST'])\n"
+        "def p():\n"
+        "    return ''\n",
+    )
+    by = {(r.method, r.path): r for r in scan(repo).routes}
+    # methods=[...] sits after a nested call kwarg; must still be POST, not GET.
+    assert ("POST", "/p") in by
+    assert ("GET", "/p") not in by
+    assert by[("POST", "/p")].handler == "p"
+
+
+def test_block_scanner_ignores_braces_in_strings(tmp_path):
+    repo = _write(
+        tmp_path, "x.proto",
+        'syntax = "proto3";\n'
+        "message Note {\n"
+        '  string body = 1 [(doc) = "has a } brace"];\n'
+        "  int64 id = 2;\n"
+        "}\n",
+    )
+    by = {(e.name, e.kind): e for e in scan(repo).entities}
+    fields = by[("Note", "Protobuf message")].fields
+    # The "}" inside the string must not end the block before `id`.
+    assert "body" in fields
+    assert "id" in fields
+
+
 def test_no_false_routes_in_plain_repo(tmp_path):
     bare = tmp_path / "bare"
     bare.mkdir()

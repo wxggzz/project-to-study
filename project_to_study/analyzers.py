@@ -55,18 +55,24 @@ _JS_ROUTE = re.compile(
 )
 _IDENT = re.compile(r"[A-Za-z_$][\w$.]*")
 # Python route decorators (FastAPI/APIRouter), matched independently so a
-# function carrying several decorators yields one route each. The handler is the
-# def that follows the decorator (see _PY_DEF).
+# function carrying several decorators yields one route each. Anchored to line
+# start (allowing indentation) so commented-out decorators (`# @app.get(...)`)
+# are not matched. The handler is the def that follows (see _PY_DEF).
 _PY_DECOR = re.compile(
-    r"@\w+\.(get|post|put|patch|delete|options|head)\(\s*['\"]([^'\"]+)['\"]",
+    r"(?m)^[ \t]*@\w+\.(get|post|put|patch|delete|options|head)\("
+    r"\s*['\"]([^'\"]+)['\"]",
     re.IGNORECASE,
 )
-# Flask: @app.route("/path", ... methods=[...] ...) — extra kwargs allowed.
-_PY_FLASK = re.compile(
-    r"@\w+\.route\(\s*['\"]([^'\"]+)['\"]([^)]*)\)", re.IGNORECASE)
+# Flask: @app.route(...) — the full argument list is read with a paren-balanced
+# scanner (so nested calls like defaults=dict(...) don't end it early), then the
+# path and methods are pulled from those args.
+_PY_ROUTE_CALL = re.compile(r"(?m)^[ \t]*@\w+\.route\(", re.IGNORECASE)
+_FLASK_PATH = re.compile(r"['\"]([^'\"]+)['\"]")
 _FLASK_METHODS = re.compile(r"methods\s*=\s*\[([^\]]*)\]", re.IGNORECASE)
-# The def following a decorator (its handler name).
+# The def following a decorator (its handler name). Searched within a small
+# window so an unrelated later def is not picked up.
 _PY_DEF = re.compile(r"\bdef\s+(\w+)\s*\(")
+_PY_HANDLER_WINDOW = 300
 # Django urls.py: path("route/", view), re_path(r"^x$", view)
 _DJANGO_URL = re.compile(
     r"\b(?:re_path|path|url)\(\s*r?['\"]([^'\"]*)['\"]\s*,\s*([\w.]+)")
@@ -113,27 +119,99 @@ def _last_identifier(arg_run: str) -> str:
     return ids[-1] if ids else ""
 
 
-def _iter_blocks(text: str, header: re.Pattern):
+def _skip_string(text: str, i: int) -> int:
+    """``text[i]`` is a quote; return the index just past the closing quote.
+
+    Handles triple quotes and backslash escapes. An unterminated single-line
+    string bails at the newline so a stray quote can't swallow the rest.
+    """
+
+    n = len(text)
+    if text[i:i + 3] in ('"""', "'''"):
+        triple = text[i:i + 3]
+        j = text.find(triple, i + 3)
+        return n if j == -1 else j + 3
+    quote = text[i]
+    i += 1
+    while i < n:
+        c = text[i]
+        if c == "\\":
+            i += 2
+            continue
+        if c == quote:
+            return i + 1
+        if c == "\n":
+            return i
+        i += 1
+    return n
+
+
+def _balanced(text: str, start: int, open_ch: str, close_ch: str, *,
+              hash_comment: bool = False, slash_comment: bool = False,
+              block_comment: bool = False) -> int:
+    """Scan from ``start`` (depth 1, just past an opener) to the matching close.
+
+    String literals and the enabled comment styles are skipped so delimiters
+    inside them do not affect the depth count. Returns the index just past the
+    matching close, or ``len(text)`` if unbalanced.
+    """
+
+    n = len(text)
+    depth = 1
+    i = start
+    while i < n and depth:
+        c = text[i]
+        if hash_comment and c == "#":
+            j = text.find("\n", i)
+            i = n if j == -1 else j + 1
+            continue
+        if slash_comment and c == "/" and i + 1 < n and text[i + 1] == "/":
+            j = text.find("\n", i)
+            i = n if j == -1 else j + 1
+            continue
+        if block_comment and c == "/" and i + 1 < n and text[i + 1] == "*":
+            j = text.find("*/", i + 2)
+            i = n if j == -1 else j + 2
+            continue
+        if c == '"' or c == "'":
+            i = _skip_string(text, i)
+            continue
+        if c == open_ch:
+            depth += 1
+        elif c == close_ch:
+            depth -= 1
+        i += 1
+    return i
+
+
+def _comment_flags(ext: str) -> dict:
+    """Comment styles to honour when balancing delimiters, per language."""
+
+    if ext == ".proto":
+        return {"slash_comment": True, "block_comment": True}
+    if ext == ".prisma":
+        return {"slash_comment": True}
+    if ext in (".graphql", ".gql"):
+        return {"hash_comment": True}
+    return {}
+
+
+def _iter_blocks(text: str, header: re.Pattern, **comment_flags):
     """Yield ``(name, body)`` for each ``header { ... }`` block.
 
     ``header`` must match through the opening ``{`` and capture the name in
-    group 1. The body is read with brace balancing, so nested ``{...}`` (e.g.
-    Protobuf ``oneof`` or nested messages, GraphQL inline blocks) is kept whole
-    instead of being truncated at the first ``}``.
+    group 1. The body is read with :func:`_balanced`, so nested ``{...}`` (e.g.
+    Protobuf ``oneof``/nested messages) is kept whole and braces inside strings
+    or comments do not truncate it.
     """
 
     n = len(text)
     for m in header.finditer(text):
-        depth = 1
-        i = m.end()
-        while i < n and depth:
-            c = text[i]
-            if c == "{":
-                depth += 1
-            elif c == "}":
-                depth -= 1
-            i += 1
-        body = text[m.end():i - 1] if depth == 0 else text[m.end():i]
+        end = _balanced(text, m.end(), "{", "}", **comment_flags)
+        if m.end() < end <= n and text[end - 1] == "}":
+            body = text[m.end():end - 1]
+        else:
+            body = text[m.end():end]
         yield m.group(1), body
 
 
@@ -204,20 +282,28 @@ def _extract_routes(text, ext, fname, rel, routes) -> None:
             _add_route(routes, "—", path, rel, "Go net/http", handler)
     elif ext == ".py":
         # Each decorator is matched on its own (so a function with several
-        # decorators yields a route each); the handler is the following def.
+        # decorators yields a route each); the handler is the next def within a
+        # small window, so an unrelated later def is not picked up.
         for m in _PY_DECOR.finditer(text):
-            dm = _PY_DEF.search(text, m.end())
+            dm = _PY_DEF.search(text, m.end(), m.end() + _PY_HANDLER_WINDOW)
             _add_route(routes, m.group(1), m.group(2), rel,
                        "FastAPI/decorator", dm.group(1) if dm else "")
-        for m in _PY_FLASK.finditer(text):
-            methods = _FLASK_METHODS.search(m.group(2))
+        for m in _PY_ROUTE_CALL.finditer(text):
+            end = _balanced(text, m.end(), "(", ")", hash_comment=True)
+            args = (text[m.end():end - 1]
+                    if m.end() < end <= len(text) and text[end - 1] == ")"
+                    else text[m.end():end])
+            pm = _FLASK_PATH.search(args)
+            if not pm:
+                continue
+            methods = _FLASK_METHODS.search(args)
             verbs = ([v.strip().strip("'\"").upper()
                       for v in methods.group(1).split(",") if v.strip()]
                      if methods else []) or ["GET"]
-            dm = _PY_DEF.search(text, m.end())
+            dm = _PY_DEF.search(text, end, end + _PY_HANDLER_WINDOW)
             handler = dm.group(1) if dm else ""
             for verb in verbs:
-                _add_route(routes, verb, m.group(1), rel, "Flask", handler)
+                _add_route(routes, verb, pm.group(1), rel, "Flask", handler)
         if fname == "urls.py":
             for path, handler in _DJANGO_URL.findall(text):
                 _add_route(routes, "—", "/" + path.lstrip("^/"), rel, "Django",
@@ -226,7 +312,8 @@ def _extract_routes(text, ext, fname, rel, routes) -> None:
         for method in _PROTO_RPC.findall(text):
             _add_route(routes, "RPC", method, rel, "gRPC")
     elif ext in {".graphql", ".gql"}:
-        for name, body in _iter_blocks(text, _GQL_TYPE_HEADER):
+        for name, body in _iter_blocks(text, _GQL_TYPE_HEADER,
+                                       **_comment_flags(ext)):
             if name in _GQL_OP_TYPES:
                 for field in _GQL_FIELD.findall(body):
                     _add_route(routes, name.upper(), field, rel, "GraphQL")
@@ -243,7 +330,8 @@ def _add_entity(entities: dict, name: str, kind: str, rel: str,
 
 def _extract_entities(text, ext, rel, entities) -> None:
     if ext == ".prisma":
-        for name, body in _iter_blocks(text, _PRISMA_HEADER):
+        for name, body in _iter_blocks(text, _PRISMA_HEADER,
+                                       **_comment_flags(ext)):
             _add_entity(entities, name, "Prisma model", rel,
                         _PRISMA_FIELD.findall(body))
     elif ext == ".sql":
@@ -260,11 +348,13 @@ def _extract_entities(text, ext, rel, entities) -> None:
         for name in _TYPEORM.findall(text):
             _add_entity(entities, name, "TypeORM entity", rel)
     elif ext == ".proto":
-        for name, body in _iter_blocks(text, _PROTO_MSG_HEADER):
+        for name, body in _iter_blocks(text, _PROTO_MSG_HEADER,
+                                       **_comment_flags(ext)):
             _add_entity(entities, name, "Protobuf message", rel,
                         _PROTO_FIELD.findall(body))
     elif ext in {".graphql", ".gql"}:
-        for name, body in _iter_blocks(text, _GQL_TYPE_HEADER):
+        for name, body in _iter_blocks(text, _GQL_TYPE_HEADER,
+                                       **_comment_flags(ext)):
             if name not in _GQL_OP_TYPES:
                 _add_entity(entities, name, "GraphQL type", rel,
                             _GQL_FIELD.findall(body))
