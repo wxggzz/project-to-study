@@ -101,6 +101,76 @@ def test_schemas_render_in_docs(tmp_path, schemas_fixture_repo):
     assert "id, name" in data          # extracted field list
 
 
+def _write(tmp_path, name, content):
+    repo = tmp_path / "repo"
+    repo.mkdir(exist_ok=True)
+    (repo / name).write_text(content, encoding="utf-8")
+    return str(repo)
+
+
+# --- Regression tests for Codex PR #1 review findings --------------------- #
+
+def test_fastapi_multiple_decorators_on_one_function(tmp_path):
+    repo = _write(
+        tmp_path, "main.py",
+        "from fastapi import FastAPI\n"
+        "app = FastAPI()\n\n"
+        "@app.get('/ping')\n"
+        "@app.post('/ping')\n"
+        "def ping():\n"
+        "    return {}\n",
+    )
+    by = {(r.method, r.path): r for r in scan(repo).routes}
+    # Both decorators must yield a route (the old combined regex dropped one).
+    assert by[("GET", "/ping")].handler == "ping"
+    assert by[("POST", "/ping")].handler == "ping"
+
+
+def test_express_middleware_chain_handler_is_last(tmp_path):
+    repo = _write(
+        tmp_path, "server.js",
+        "const app = require('express')();\n"
+        "app.get('/users', requireAuth, listUsers);\n",
+    )
+    by = {(r.method, r.path): r for r in scan(repo).routes}
+    # The handler is the last identifier; requireAuth is middleware.
+    assert by[("GET", "/users")].handler == "listUsers"
+
+
+def test_flask_route_with_extra_kwargs(tmp_path):
+    repo = _write(
+        tmp_path, "views.py",
+        "from flask import Flask\n"
+        "app = Flask(__name__)\n\n"
+        "@app.route('/items', methods=['GET', 'POST'], strict_slashes=False)\n"
+        "def items():\n"
+        "    return ''\n",
+    )
+    by = {(r.method, r.path): r for r in scan(repo).routes}
+    # Extra kwargs after methods=[...] must not drop the route.
+    assert ("GET", "/items") in by
+    assert ("POST", "/items") in by
+    assert by[("GET", "/items")].handler == "items"
+
+
+def test_protobuf_oneof_fields_not_truncated(tmp_path):
+    repo = _write(
+        tmp_path, "x.proto",
+        'syntax = "proto3";\n'
+        "message Event {\n"
+        "  oneof payload {\n"
+        "    string text = 1;\n"
+        "    int64 number = 2;\n"
+        "  }\n"
+        "  int64 id = 3;\n"
+        "}\n",
+    )
+    by = {(e.name, e.kind): e for e in scan(repo).entities}
+    fields = by[("Event", "Protobuf message")].fields
+    # `id` after the nested oneof block was truncated before the fix.
+    assert fields == ["text", "number", "id"]
+
+
 def test_no_false_routes_in_plain_repo(tmp_path):
     bare = tmp_path / "bare"
     bare.mkdir()
