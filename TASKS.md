@@ -2,6 +2,16 @@
 
 ## Completed
 
+- Upgraded `examples/study-docs/index.html` from a Markdown link directory into
+  a single-file showroom:
+  - hero actions for docs / Markdown / `index.json`
+  - Hallucination Test comparison
+  - Evidence Trace flow
+  - expandable document cards with summaries, evidence, confidence, and raw
+    Markdown links
+  - AI-ready `index.json` preview card
+- Extended `scripts/validate-skill.py` so CI checks the showroom markers and
+  prevents the demo from regressing back to a plain directory page.
 - Added a README "Hallucination Test" section in English and Chinese, linking to
   the sample deployment manual and assumptions file.
 - Added GitHub Pages support for the live demo:
@@ -19,8 +29,9 @@
 
 ## Next Recommended Task
 
-- After this reaches `main`, confirm GitHub Pages is set to deploy from GitHub
-  Actions, then check `https://wxggzz.github.io/tracedocs/`.
+- After this reaches `main`, wait for the Pages workflow, then check
+  `https://wxggzz.github.io/tracedocs/` and click a few expandable document
+  cards.
 
 ## Known Blockers
 
@@ -35,6 +46,7 @@
 - `README.zh-CN.md`
 - `TASKS.md`
 - `examples/study-docs/.nojekyll`
+- `examples/study-docs/index.html`
 - `scripts/validate-skill.py`
 
 ## Commands / Checks Run
@@ -47,3 +59,6 @@
 - `chmod +x scripts/validate-skill.py`
 - `python3 scripts/validate-skill.py`
 - `git diff --check`
+- Chrome headless screenshot QA:
+  - desktop-ish: `1440x1200`
+  - small viewport: `520x1100`

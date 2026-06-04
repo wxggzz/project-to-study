@@ -139,6 +139,18 @@ def validate_examples() -> None:
     for path in ["README.md", "index.json", "index.html", ".nojekyll", *EXPECTED_DOCS, *EVIDENCE_FILES]:
         check((base / path).is_file(), f"Missing example output: {rel(base / path)}")
 
+    preview = read_text("examples/study-docs/index.html")
+    for marker in [
+        "Live study-docs showroom",
+        "Hallucination Test",
+        "Evidence Trace",
+        "Document Showroom",
+        "AI-ready index.json",
+        "<details class=\"doc\"",
+        "Open Markdown",
+    ]:
+        check(marker in preview, f"examples/study-docs/index.html missing showroom marker: {marker}")
+
     index = load_json("examples/study-docs/index.json")
     for key in ["schema", "name", "generated_at", "source", "documents", "commands", "confidence", "unknowns", "evidence_files"]:
         check(key in index, f"examples/study-docs/index.json missing key: {key}")
