@@ -24,6 +24,17 @@ Purpose:
 - confidence counts, unknowns, evidence files, and optional routes/entities
 - always generated; keep it factual (see the shape in `SKILL.md`)
 
+## `index.html`
+
+Audience: humans who want a quick browser preview or screenshot.
+
+Purpose:
+
+- optional single-file preview of the generated package
+- link back to Markdown documents and `_evidence/` files
+- add no new facts; Markdown and `index.json` remain the source of truth
+- no build step, no external assets, no JS framework
+
 ## `00-project-overview.md`
 
 Audience: product owners, maintainers, new contributors.
@@ -151,4 +162,3 @@ Purpose:
 - release checklist
 - safe change workflow
 - AI-agent handoff notes
-

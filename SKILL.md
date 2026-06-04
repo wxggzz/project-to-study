@@ -1,12 +1,14 @@
 ---
 name: tracedocs
-description: Generate a structured Markdown study documentation package from a codebase, including operation, deployment, learning, architecture, code introduction, troubleshooting, and maintenance manuals.
+description: Generate evidence-grounded, source-cited Markdown study docs and an AI-ready index.json from a codebase, including operation, deployment, learning, architecture, code introduction, troubleshooting, and maintenance manuals.
 ---
 
 # tracedocs
 
-Turn any codebase into a practical Markdown documentation package for learning,
-operating, deploying, and maintaining the project.
+Turn any codebase into an evidence-grounded Markdown documentation package for
+learning, operating, deploying, and maintaining the project. Every operational
+claim should cite source evidence, carry a confidence label, or be stated as
+unknown.
 
 ## When To Use
 
@@ -17,6 +19,7 @@ Use this workflow when the user asks to:
 - explain a project as operation, deployment, study, and architecture manuals
 - prepare docs for future AI-agent handoff
 - turn a repo into a maintainable study guide
+- create an AI-ready `index.json` manifest for generated docs
 
 If the user provides a GitHub URL, clone it into a temporary directory first.
 If the user says "this project" or gives no path, use the current working
@@ -143,9 +146,10 @@ linear learning path:
 5. learning
 6. code walkthrough
 7. architecture
-8. APIs and data
-9. troubleshooting
-10. maintenance
+8. APIs and integrations
+9. data model
+10. troubleshooting
+11. maintenance
 
 Use Mermaid diagrams for architecture, request flow, state flow, or deployment
 topology when useful.
@@ -220,4 +224,3 @@ sections that don't apply.
 Write as a senior engineer onboarding a capable teammate. Be clear, concrete,
 and friendly. Explain jargon the first time it appears, but do not talk down to
 the reader.
-
