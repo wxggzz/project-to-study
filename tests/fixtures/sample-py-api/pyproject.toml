@@ -1,0 +1,9 @@
+[project]
+name = "sample-py-api"
+version = "0.1.0"
+description = "A small FastAPI + SQLAlchemy service used as a project-to-study fixture."
+requires-python = ">=3.9"
+dependencies = ["fastapi", "sqlalchemy", "uvicorn"]
+
+[project.optional-dependencies]
+dev = ["pytest"]

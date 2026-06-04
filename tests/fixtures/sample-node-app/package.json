@@ -1,0 +1,21 @@
+{
+  "name": "sample-node-app",
+  "version": "1.0.0",
+  "description": "A tiny Express service used as a project-to-study test fixture.",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node src/index.js",
+    "start": "node src/index.js",
+    "build": "echo 'no build step'",
+    "test": "node --test",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "express": "^4.18.0",
+    "pg": "^8.11.0",
+    "stripe": "^14.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  }
+}

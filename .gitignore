@@ -1,0 +1,18 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+# Ignore generated output at the repo root, but keep the committed demo
+# under examples/study-docs/.
+/study-docs/
+.env
+.env.*
+!.env.example
+
