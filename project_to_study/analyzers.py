@@ -69,10 +69,8 @@ _PY_DECOR = re.compile(
 _PY_ROUTE_CALL = re.compile(r"(?m)^[ \t]*@\w+\.route\(", re.IGNORECASE)
 _FLASK_PATH = re.compile(r"['\"]([^'\"]+)['\"]")
 _FLASK_METHODS = re.compile(r"methods\s*=\s*\[([^\]]*)\]", re.IGNORECASE)
-# The def following a decorator (its handler name). Searched within a small
-# window so an unrelated later def is not picked up.
+# The def a decorator applies to (its handler name); see _handler_after.
 _PY_DEF = re.compile(r"\bdef\s+(\w+)\s*\(")
-_PY_HANDLER_WINDOW = 300
 # Django urls.py: path("route/", view), re_path(r"^x$", view)
 _DJANGO_URL = re.compile(
     r"\b(?:re_path|path|url)\(\s*r?['\"]([^'\"]*)['\"]\s*,\s*([\w.]+)")
@@ -101,6 +99,10 @@ _PRISMA_HEADER = re.compile(r"(?m)^[ \t]*model\s+(\w+)\s*\{")
 _PRISMA_FIELD = re.compile(r"(?m)^\s*(\w+)\s+\S")
 _PROTO_MSG_HEADER = re.compile(r"(?m)^[ \t]*message\s+(\w+)\s*\{")
 _PROTO_FIELD = re.compile(r"(?m)^\s*(?:repeated\s+)?[\w.]+\s+(\w+)\s*=\s*\d+")
+# Nested blocks inside a message body. `oneof` fields belong to the message, so
+# we descend into it; nested `message`/`enum` blocks are their own entities and
+# their fields must NOT leak into the outer message.
+_PROTO_NESTED = re.compile(r"\b(message|enum|oneof)\b\s+\w*\s*\{")
 # GraphQL type/input/interface carry a field block; enum/scalar do not.
 _GQL_TYPE_HEADER = re.compile(
     r"(?m)^[ \t]*(?:type|input|interface)\s+(\w+)\s*\{")
@@ -215,6 +217,48 @@ def _iter_blocks(text: str, header: re.Pattern, **comment_flags):
         yield m.group(1), body
 
 
+def _handler_after(text: str, pos: int) -> str:
+    """Name of the def a decorator (ending at ``pos``) applies to, or ''.
+
+    Finds the next ``def`` but rejects it when a blank line separates it from
+    the decorator, so an unrelated later function is not picked up. Robust to
+    long or multi-line decorator arguments (unlike a fixed character window).
+    """
+
+    m = _PY_DEF.search(text, pos)
+    if not m:
+        return ""
+    if re.search(r"\n[ \t]*\n", text[pos:m.start()]):
+        return ""
+    return m.group(1)
+
+
+def _proto_fields(body: str) -> list:
+    """Field names directly on a Protobuf message body.
+
+    Descends into ``oneof`` (its fields belong to the message) but skips nested
+    ``message``/``enum`` blocks so their fields are not attributed to the outer
+    message.
+    """
+
+    fields: list = []
+    pos = 0
+    while True:
+        m = _PROTO_NESTED.search(body, pos)
+        if not m:
+            fields += _PROTO_FIELD.findall(body[pos:])
+            return fields
+        fields += _PROTO_FIELD.findall(body[pos:m.start()])
+        end = _balanced(body, m.end(), "{", "}",
+                        slash_comment=True, block_comment=True)
+        if m.group(1) == "oneof":
+            inner = (body[m.end():end - 1]
+                     if m.end() < end <= len(body) and body[end - 1] == "}"
+                     else body[m.end():end])
+            fields += _proto_fields(inner)
+        pos = end
+
+
 def analyze(root: Path, facts: ProjectFacts) -> None:
     """Populate ``facts.routes`` and ``facts.entities`` from the source tree."""
 
@@ -285,9 +329,8 @@ def _extract_routes(text, ext, fname, rel, routes) -> None:
         # decorators yields a route each); the handler is the next def within a
         # small window, so an unrelated later def is not picked up.
         for m in _PY_DECOR.finditer(text):
-            dm = _PY_DEF.search(text, m.end(), m.end() + _PY_HANDLER_WINDOW)
             _add_route(routes, m.group(1), m.group(2), rel,
-                       "FastAPI/decorator", dm.group(1) if dm else "")
+                       "FastAPI/decorator", _handler_after(text, m.end()))
         for m in _PY_ROUTE_CALL.finditer(text):
             end = _balanced(text, m.end(), "(", ")", hash_comment=True)
             args = (text[m.end():end - 1]
@@ -300,8 +343,7 @@ def _extract_routes(text, ext, fname, rel, routes) -> None:
             verbs = ([v.strip().strip("'\"").upper()
                       for v in methods.group(1).split(",") if v.strip()]
                      if methods else []) or ["GET"]
-            dm = _PY_DEF.search(text, end, end + _PY_HANDLER_WINDOW)
-            handler = dm.group(1) if dm else ""
+            handler = _handler_after(text, end)
             for verb in verbs:
                 _add_route(routes, verb, pm.group(1), rel, "Flask", handler)
         if fname == "urls.py":
@@ -351,7 +393,7 @@ def _extract_entities(text, ext, rel, entities) -> None:
         for name, body in _iter_blocks(text, _PROTO_MSG_HEADER,
                                        **_comment_flags(ext)):
             _add_entity(entities, name, "Protobuf message", rel,
-                        _PROTO_FIELD.findall(body))
+                        _proto_fields(body))
     elif ext in {".graphql", ".gql"}:
         for name, body in _iter_blocks(text, _GQL_TYPE_HEADER,
                                        **_comment_flags(ext)):

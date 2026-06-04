@@ -219,6 +219,57 @@ def test_block_scanner_ignores_braces_in_strings(tmp_path):
     assert "id" in fields
 
 
+# --- Regression tests for Codex PR #1 third-round findings ---------------- #
+
+def test_protobuf_nested_message_fields_not_leaked(tmp_path):
+    repo = _write(
+        tmp_path, "x.proto",
+        'syntax = "proto3";\n'
+        "message Outer {\n"
+        "  message Inner {\n"
+        "    string secret = 1;\n"
+        "  }\n"
+        "  Inner inner = 1;\n"
+        "  int64 id = 2;\n"
+        "}\n",
+    )
+    by = {(e.name, e.kind): e for e in scan(repo).entities}
+    # Outer keeps only its own fields; Inner's `secret` must not leak in.
+    assert by[("Outer", "Protobuf message")].fields == ["inner", "id"]
+    # Inner is still its own entity with its own field.
+    assert by[("Inner", "Protobuf message")].fields == ["secret"]
+
+
+def test_protobuf_oneof_still_descended(tmp_path):
+    repo = _write(
+        tmp_path, "y.proto",
+        "message Event {\n"
+        "  oneof payload {\n"
+        "    string text = 1;\n"
+        "  }\n"
+        "  int64 id = 2;\n"
+        "}\n",
+    )
+    by = {(e.name, e.kind): e for e in scan(repo).entities}
+    # oneof fields belong to the message; nested-block skipping must not lose them.
+    assert by[("Event", "Protobuf message")].fields == ["text", "id"]
+
+
+def test_fastapi_handler_with_long_decorator_args(tmp_path):
+    long_args = ", ".join(f"dep{i}=value{i}" for i in range(60))
+    repo = _write(
+        tmp_path, "main.py",
+        "from fastapi import FastAPI\n"
+        "app = FastAPI()\n\n"
+        f"@app.get('/big', {long_args})\n"
+        "def big_handler():\n"
+        "    return {}\n",
+    )
+    by = {(r.method, r.path): r for r in scan(repo).routes}
+    # Handler must be found despite very long decorator arguments.
+    assert by[("GET", "/big")].handler == "big_handler"
+
+
 def test_no_false_routes_in_plain_repo(tmp_path):
     bare = tmp_path / "bare"
     bare.mkdir()

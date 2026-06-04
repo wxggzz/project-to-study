@@ -80,7 +80,7 @@ python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
 
 ## Handoff Notes
 
-- Commands run: `pytest -q` (55 passed); CLI generate + validate on the fixtures
+- Commands run: `pytest -q` (58 passed); CLI generate + validate on the fixtures
   (exit 0); all four styles validate; remote-clone failure path exits 2.
 - PR #1 review (Codex): fixed 4 analyzer findings — multi-decorator FastAPI
   routes, Express middleware-vs-handler, Flask `methods=[...]` with extra
@@ -91,6 +91,11 @@ python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
   a nested-call kwarg are parsed (paren-balanced args), and block/paren scanning
   now skips strings and comments (`_balanced`/`_skip_string`), so braces inside
   strings no longer truncate fields. Regression tests added for each.
+- PR #1 third review (Codex): fixed 2 more — nested Protobuf `message` fields no
+  longer leak into the outer message (`_proto_fields` skips nested message/enum
+  but descends into `oneof`), and the route handler name survives long/multi-line
+  decorator args (`_handler_after` uses a blank-line bound, not a char window).
+  Regression tests added for each.
 - Files added: `project_to_study/*.py` (incl. `source.py`, `analyzers.py`,
   `style.py`), `tests/*` (incl. `test_source.py`, `test_analyzers.py`,
   `test_style.py`), the `tests/fixtures/sample-py-api/` FastAPI+SQLAlchemy
