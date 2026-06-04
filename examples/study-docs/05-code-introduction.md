@@ -22,7 +22,7 @@ tests/             # pytest suite + fixtures
 
 | Path | Role | Evidence |
 | --- | --- | --- |
-| `project-to-study` (console script) | Installed command → `cli:main` | `pyproject.toml` `[project.scripts]` |
+| `tracedocs` (console script) | Installed command → `cli:main` | `pyproject.toml` `[project.scripts]` |
 | `project_to_study/cli.py:main` | Parses args; bare path is treated as `generate` | `cli.py` `main()` |
 
 ## Main Modules

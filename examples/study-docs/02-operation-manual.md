@@ -2,7 +2,7 @@
 
 ## Daily Operation
 
-`project-to-study` is an on-demand CLI, not a long-running service. You invoke it
+`tracedocs` is an on-demand CLI, not a long-running service. You invoke it
 to (re)generate docs for a target repository, and optionally to validate an
 existing package. Behaviour is controlled entirely by command-line flags — there
 is no runtime configuration file or environment variable.
@@ -11,11 +11,11 @@ is no runtime configuration file or environment variable.
 
 | Task | Command | Evidence | Confidence |
 | --- | --- | --- | --- |
-| Generate docs | `project-to-study <path> --out study-docs` | `cli.py` `_run_generate` | Verified |
-| Choose a style | `project-to-study <path> --out study-docs --style teaching` | `cli.py` `--style`, `style.py` | Verified |
-| Generate from a Git URL | `project-to-study https://github.com/owner/repo --out study-docs` | `source.py` `acquire` | Verified |
-| Validate a package | `project-to-study validate study-docs` | `cli.py` `_run_validate`, `validate.py` | Verified |
-| Show version | `project-to-study --version` | `cli.py` argparse `--version` | Verified |
+| Generate docs | `tracedocs <path> --out study-docs` | `cli.py` `_run_generate` | Verified |
+| Choose a style | `tracedocs <path> --out study-docs --style teaching` | `cli.py` `--style`, `style.py` | Verified |
+| Generate from a Git URL | `tracedocs https://github.com/owner/repo --out study-docs` | `source.py` `acquire` | Verified |
+| Validate a package | `tracedocs validate study-docs` | `cli.py` `_run_validate`, `validate.py` | Verified |
+| Show version | `tracedocs --version` | `cli.py` argparse `--version` | Verified |
 
 ## Configuration
 

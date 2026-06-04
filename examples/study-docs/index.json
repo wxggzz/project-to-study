@@ -1,9 +1,9 @@
 {
   "schema": "1",
-  "name": "project-to-study (CLI)",
+  "name": "tracedocs (CLI)",
   "generated_at": "2026-06-04",
-  "source": "project-to-study @ cli branch",
-  "generated_by": "project-to-study skill",
+  "source": "tracedocs @ cli branch",
+  "generated_by": "tracedocs skill",
   "documents": [
     { "file": "00-project-overview.md", "title": "Project Overview", "audience": "maintainers" },
     { "file": "01-quickstart.md", "title": "Quickstart", "audience": "anyone running it" },
@@ -19,7 +19,7 @@
   ],
   "commands": {
     "install": "pip install -e \".[dev]\"",
-    "run": "project-to-study <path> --out study-docs",
+    "run": "tracedocs <path> --out study-docs",
     "test": "pytest -q"
   },
   "env_var_names": [],

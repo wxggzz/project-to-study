@@ -2,9 +2,9 @@
 
 ## `study-docs/`
 
-A complete, worked sample of what the **project-to-study skill** produces. It
+A complete, worked sample of what the **tracedocs skill** produces. It
 documents this project's own deterministic CLI (the implementation kept on the
-[`cli`](https://github.com/wxggzz/project-to-study/tree/cli) branch) — a real,
+[`cli`](https://github.com/wxggzz/tracedocs/tree/cli) branch) — a real,
 non-trivial Python project with a scanner, analyzers, a writer, and a test
 suite.
 

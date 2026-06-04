@@ -2,7 +2,7 @@
 
 ## What This Project Does
 
-`project-to-study` is a command-line tool that scans a target code repository
+`tracedocs` is a command-line tool that scans a target code repository
 and generates a structured Markdown documentation package (`study-docs/`) —
 overview, quickstart, operation, deployment, learning, code introduction,
 architecture, API, data model, troubleshooting, and maintenance manuals — with

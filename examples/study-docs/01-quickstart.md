@@ -19,10 +19,10 @@ Confidence: Verified
 ## Run Locally
 
 ```bash
-project-to-study /path/to/repo --out study-docs
+tracedocs /path/to/repo --out study-docs
 ```
 
-Evidence: `pyproject.toml` `[project.scripts] project-to-study = "project_to_study.cli:main"`
+Evidence: `pyproject.toml` `[project.scripts] tracedocs = "project_to_study.cli:main"`
 Confidence: Verified
 
 ## Run Tests
@@ -37,14 +37,14 @@ Confidence: Verified
 ## First-Run Checklist
 
 - Virtual environment created and dependencies installed
-- `project-to-study --version` prints a version
+- `tracedocs --version` prints a version
 - A run against a sample repo produces a `study-docs/` directory
-- `project-to-study validate study-docs` exits 0
+- `tracedocs validate study-docs` exits 0
 
 ## Common First-Run Issues
 
 | Symptom | Likely Cause | Fix |
 | --- | --- | --- |
-| `command not found: project-to-study` | venv not active / not installed | Use `.venv/bin/project-to-study` or activate the venv |
+| `command not found: tracedocs` | venv not active / not installed | Use `.venv/bin/tracedocs` or activate the venv |
 | `Error: git is required ...` | Git URL used without `git` installed | Install `git`, or pass a local path |
 | `Error: Target path is not a directory` | Bad path argument | Point at an existing repository directory |

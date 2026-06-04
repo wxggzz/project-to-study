@@ -6,7 +6,7 @@ it.
 ## Verified Facts
 
 - Python ≥ 3.9, zero runtime dependencies, MIT licensed (`pyproject.toml`).
-- Console script `project-to-study` → `project_to_study.cli:main`.
+- Console script `tracedocs` → `project_to_study.cli:main`.
 - Commands `generate` (default for a bare path) and `validate`.
 - Four output styles; Git-URL input via shallow `git clone`.
 - Pipeline: `source.acquire` → `scanner.scan` → `analyzers.analyze` →

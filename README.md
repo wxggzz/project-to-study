@@ -1,4 +1,4 @@
-# project-to-study
+# tracedocs
 
 > **Turn any codebase into evidence-grounded docs your team and AI agents can trust — a Claude Code skill.**
 
@@ -10,7 +10,7 @@ Markdown **+ a machine-readable `index.json`** — AI-ready and living in your r
 ![Output](https://img.shields.io/badge/output-Markdown%20%2B%20JSON-blue)
 
 **The problem:** AI doc generators hallucinate deployment steps and quietly go
-stale. **project-to-study** generates documentation where every operational
+stale. **tracedocs** generates documentation where every operational
 claim is labelled `Verified` / `Inferred` / `Unknown` / `Needs confirmation` and
 tied to the file it came from — and it *refuses* to write steps it can't source.
 
@@ -44,28 +44,28 @@ sample (the skill documenting this project's own CLI).
 ## Install (as a Claude Code skill)
 
 ```bash
-git clone https://github.com/wxggzz/project-to-study
-mkdir -p ~/.claude/skills/project-to-study
-cp -R project-to-study/SKILL.md project-to-study/references ~/.claude/skills/project-to-study/
+git clone https://github.com/wxggzz/tracedocs
+mkdir -p ~/.claude/skills/tracedocs
+cp -R tracedocs/SKILL.md tracedocs/references ~/.claude/skills/tracedocs/
 ```
 
 Then **reload/restart Claude Code** — skills are discovered at startup. (Prefer
-a live link? `ln -s "$(pwd)/project-to-study" ~/.claude/skills/project-to-study`.)
+a live link? `ln -s "$(pwd)/tracedocs" ~/.claude/skills/tracedocs`.)
 
 ## Use
 
 ```text
-/project-to-study           # or: "use project-to-study to document ./my-app"
+/tracedocs           # or: "use tracedocs to document ./my-app"
 ```
 
 Give it a local path, a Git URL (cloned to a temp dir), or nothing (uses the
 current directory). Output lands in `study-docs/`.
 
-## project-to-study vs codebase-to-course
+## tracedocs vs codebase-to-course
 
 Both are Claude Code skills that read a repo — they aim at different jobs.
 
-| | [codebase-to-course](https://github.com/zarazhangrui/codebase-to-course) | **project-to-study** |
+| | [codebase-to-course](https://github.com/zarazhangrui/codebase-to-course) | **tracedocs** |
 | --- | --- | --- |
 | Output | Interactive HTML course | Repo-native Markdown **+ `index.json`** |
 | Audience | Learners / non-technical | Engineers, operators, **AI agents** |
@@ -116,7 +116,7 @@ file covers.
 ## Repository Layout
 
 ```text
-project-to-study/
+tracedocs/
   SKILL.md                        # the skill: workflow + output contract
   references/
     analysis-checklist.md         # what to extract before writing
@@ -132,7 +132,7 @@ project-to-study/
 
 Prefer a zero-dependency, offline run (e.g. in CI)? A Python CLI that produces
 the same `study-docs/` layout deterministically lives on the
-[`cli`](https://github.com/wxggzz/project-to-study/tree/cli) branch. The skill
+[`cli`](https://github.com/wxggzz/tracedocs/tree/cli) branch. The skill
 above is the primary, recommended way to use this project.
 
 ## License

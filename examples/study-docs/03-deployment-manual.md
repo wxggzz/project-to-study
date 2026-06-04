@@ -4,7 +4,7 @@
 
 **No deployment configuration was found in this repository.** There is no
 Dockerfile, no CI workflow, no `Makefile`, and no hosting-provider config. This
-is expected: `project-to-study` is a developer CLI distributed as a Python
+is expected: `tracedocs` is a developer CLI distributed as a Python
 package / source checkout, not a deployed service.
 
 Evidence: absence of `Dockerfile`, `.github/workflows/`, `Makefile`, etc.

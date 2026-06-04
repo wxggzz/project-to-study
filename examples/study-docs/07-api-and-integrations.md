@@ -2,7 +2,7 @@
 
 ## Surface
 
-`project-to-study` has no HTTP API; its interface is the command line. The
+`tracedocs` has no HTTP API; its interface is the command line. The
 commands below are the public surface.
 
 ## Commands
@@ -14,7 +14,7 @@ commands below are the public surface.
 | `--version` | Print the version | — | `cli.py` argparse |
 
 A bare first argument that is not a known subcommand is treated as the path to
-`generate`, so `project-to-study ./repo --out docs` works without typing
+`generate`, so `tracedocs ./repo --out docs` works without typing
 `generate`.
 
 Evidence: `cli.py` `main()` dispatch

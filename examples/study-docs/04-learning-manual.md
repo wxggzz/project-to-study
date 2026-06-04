@@ -2,7 +2,7 @@
 
 ## Learning Goal
 
-After this guide you should understand what `project-to-study` does, how a run
+After this guide you should understand what `tracedocs` does, how a run
 flows from input to `study-docs/`, where the important code lives, and how to
 extend extraction safely.
 
@@ -35,7 +35,7 @@ extend extraction safely.
 ## Questions To Check Understanding
 
 1. What command generates docs, and what is the default output directory?
-   (`project-to-study <path> --out study-docs`)
+   (`tracedocs <path> --out study-docs`)
 2. Which module turns `ProjectFacts` into Markdown? (`writer.py`)
 3. Where does the evidence trail get written? (`_evidence/` via `evidence.py`)
 4. How does a Git URL become a local directory to scan? (`source.acquire`)

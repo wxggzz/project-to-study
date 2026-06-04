@@ -4,14 +4,14 @@
 
 ```bash
 pytest -q
-project-to-study validate study-docs
+tracedocs validate study-docs
 ```
 
 ## Common Issues
 
 | Symptom | Likely Cause | Check | Fix |
 | --- | --- | --- | --- |
-| `command not found` | Not installed / venv inactive | `which project-to-study` | `pip install -e .` or use `.venv/bin/...` |
+| `command not found` | Not installed / venv inactive | `which tracedocs` | `pip install -e .` or use `.venv/bin/...` |
 | `Error: git is required ...` | Git URL without `git` | `git --version` | Install `git` or pass a local path |
 | `Error: Target path is not a directory` | Bad path | Confirm the directory exists | Pass a valid repo path |
 | Empty/sparse docs | Language/framework not recognised | Inspect `_evidence/assumptions.md` | Add detection in `scanner.py`/`analyzers.py` |

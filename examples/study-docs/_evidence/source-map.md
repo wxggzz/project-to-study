@@ -4,10 +4,10 @@ Every notable claim and the evidence behind it.
 
 | Claim | Evidence | Confidence |
 | --- | --- | --- |
-| Project name is `project-to-study`. | `pyproject.toml` `[project].name` | Verified |
+| Project name is `tracedocs`. | `pyproject.toml` `[project].name` | Verified |
 | Requires Python ≥ 3.9. | `pyproject.toml` `requires-python` | Verified |
 | Has no runtime dependencies. | `pyproject.toml` `dependencies = []` | Verified |
-| Installed as the `project-to-study` console script → `cli:main`. | `pyproject.toml` `[project.scripts]` | Verified |
+| Installed as the `tracedocs` console script → `cli:main`. | `pyproject.toml` `[project.scripts]` | Verified |
 | Dev/test dependency is pytest. | `pyproject.toml` `optional-dependencies.dev` | Verified |
 | Licensed MIT. | `pyproject.toml` `license` | Verified |
 | Entry/dispatch lives in `cli.py:main`; bare path → `generate`. | `cli.py` `main()` | Verified |
