@@ -2,6 +2,14 @@
 
 ## Completed
 
+- Added `docs/visual-system.md`, a lightweight Figma-style component spec for
+  tracedocs previews: colors, typography, spacing, cards, evidence labels, code
+  blocks, flow nodes, and responsive rules.
+- Synced the live demo CSS to the visual system tokens (`--surface-*`,
+  `--space-*`, `--radius-*`) so the HTML behaves like a reusable component
+  implementation rather than one-off styling.
+- Extended `scripts/validate-skill.py` to check the visual-system doc and the
+  matching showroom token markers.
 - Upgraded `examples/study-docs/index.html` from a Markdown link directory into
   a single-file showroom:
   - hero actions for docs / Markdown / `index.json`
@@ -45,6 +53,7 @@
 - `README.md`
 - `README.zh-CN.md`
 - `TASKS.md`
+- `docs/visual-system.md`
 - `examples/study-docs/.nojekyll`
 - `examples/study-docs/index.html`
 - `scripts/validate-skill.py`

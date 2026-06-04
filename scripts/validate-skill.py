@@ -141,6 +141,9 @@ def validate_examples() -> None:
 
     preview = read_text("examples/study-docs/index.html")
     for marker in [
+        "tracedocs visual system tokens",
+        "--surface-1:#171a23",
+        "--radius-lg:12px",
         "Live study-docs showroom",
         "Hallucination Test",
         "Evidence Trace",
@@ -175,6 +178,16 @@ def validate_assets() -> None:
 def validate_workflows_and_docs() -> None:
     require_file(".github/workflows/pages.yml")
     require_file(".github/workflows/validate.yml")
+    visual_system = read_text("docs/visual-system.md")
+    for marker in [
+        "# tracedocs Visual System",
+        "## Color Tokens",
+        "## Components",
+        "### Evidence Label",
+        "### Code Block",
+        "### Flow Node",
+    ]:
+        check(marker in visual_system, f"docs/visual-system.md missing marker: {marker}")
 
     readme = read_text("README.md")
     readme_zh = read_text("README.zh-CN.md")

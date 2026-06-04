@@ -198,6 +198,7 @@ tracedocs/
   scripts/sync-plugin.sh          # 把根目录 SKILL.md + references 同步进插件
   prompts/generate-study-docs.md  # 可直接粘贴的调用提示词
   docs/output-document-map.md     # 每个生成文档的用途
+  docs/visual-system.md           # 视觉 token + 预览组件规则
   examples/study-docs/            # 一个完整、已校验的样例
 ```
 

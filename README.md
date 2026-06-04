@@ -209,6 +209,7 @@ tracedocs/
   scripts/sync-plugin.sh          # copy root SKILL.md + references into the plugin
   prompts/generate-study-docs.md  # ready-to-paste invocation prompt
   docs/output-document-map.md     # what each generated document is for
+  docs/visual-system.md           # visual tokens + preview component rules
   examples/study-docs/            # a complete, validated sample
 ```
 
