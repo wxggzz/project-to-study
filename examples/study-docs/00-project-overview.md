@@ -2,7 +2,7 @@
 
 ## What This Project Does
 
-A tiny Express service used as a project-to-study test fixture.
+A tiny Express service used as a tracedocs test fixture.
 
 ## Who Uses It
 

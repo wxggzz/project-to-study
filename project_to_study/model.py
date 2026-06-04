@@ -1,4 +1,4 @@
-"""Internal data model for project-to-study.
+"""Internal data model for tracedocs.
 
 The scanner produces a :class:`ProjectFacts` instance plus a list of
 :class:`Claim` objects. The writer and evidence modules consume those.

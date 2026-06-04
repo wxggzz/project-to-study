@@ -4,7 +4,7 @@ Use this prompt after the project has either a CLI implementation or a working
 agent skill.
 
 ```text
-Use the project-to-study workflow.
+Use the tracedocs workflow.
 
 Target project:
 <TARGET_PATH_OR_GITHUB_URL>

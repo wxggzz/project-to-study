@@ -7,9 +7,9 @@ To have findings posted directly on the PR, append the optional last line shown
 in the prompt.
 
 ```text
-You are reviewing a pull request in the project-to-study repository.
+You are reviewing a pull request in the tracedocs repository.
 
-Repo: https://github.com/wxggzz/project-to-study
+Repo: https://github.com/wxggzz/tracedocs
 PR #<PR_NUMBER> (develop -> main)
 
 First, ground yourself in the project's intent and rules — read:

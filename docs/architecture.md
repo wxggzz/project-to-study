@@ -1,6 +1,6 @@
 # Architecture Design
 
-`project-to-study` should be designed as a documentation pipeline. The pipeline
+`tracedocs` should be designed as a documentation pipeline. The pipeline
 can run as a Claude Code/Codex skill, a CLI, or both.
 
 ## Conceptual Pipeline

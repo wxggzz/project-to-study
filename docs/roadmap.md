@@ -55,7 +55,7 @@ Rules:
 Add a validation command:
 
 ```bash
-project-to-study validate study-docs/
+tracedocs validate study-docs/
 ```
 
 Validation should check:

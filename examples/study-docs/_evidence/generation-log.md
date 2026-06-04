@@ -17,7 +17,7 @@
 
 ## Run Metadata
 
-- Tool: project-to-study v0.1.0
+- Tool: tracedocs v0.1.0
 - Generated at: 2026-06-04T15:32:34
 - Style: standard
 - Mode: deterministic (no LLM)

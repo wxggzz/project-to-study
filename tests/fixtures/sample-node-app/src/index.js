@@ -1,4 +1,4 @@
-// Minimal Express app used as a test fixture for project-to-study.
+// Minimal Express app used as a test fixture for tracedocs.
 const express = require("express");
 
 const app = express();

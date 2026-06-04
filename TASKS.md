@@ -9,7 +9,7 @@ and a committed sample lives in `examples/study-docs/`.
 ## MVP Tasks
 
 - [x] Decide implementation language and packaging. (Python, `pyproject.toml`,
-      `project-to-study` console script.)
+      `tracedocs` console script.)
 - [x] Add CLI entry point. (`project_to_study/cli.py`: `generate` + `validate`,
       bare-path form supported.)
 - [x] Implement repository scanner. (`project_to_study/scanner.py`)
@@ -74,8 +74,8 @@ and a committed sample lives in `examples/study-docs/`.
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
 .venv/bin/python -m pytest -q
-.venv/bin/project-to-study tests/fixtures/sample-node-app --out /tmp/study-docs
-.venv/bin/project-to-study validate /tmp/study-docs
+.venv/bin/tracedocs tests/fixtures/sample-node-app --out /tmp/study-docs
+.venv/bin/tracedocs validate /tmp/study-docs
 ```
 
 ## Handoff Notes

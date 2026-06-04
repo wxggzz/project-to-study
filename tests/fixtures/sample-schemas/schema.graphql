@@ -1,4 +1,4 @@
-"""GraphQL schema used as a project-to-study test fixture."""
+"""GraphQL schema used as a tracedocs test fixture."""
 
 type User {
   id: ID!

@@ -5,7 +5,7 @@ rules so Claude Code and Codex can work on it in sequence.
 
 ## Current Mission
 
-Build `project-to-study`: a system or skill that generates Markdown study docs
+Build `tracedocs`: a system or skill that generates Markdown study docs
 from a codebase.
 
 The project should stay agent-friendly:

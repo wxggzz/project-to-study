@@ -1,6 +1,6 @@
-# project-to-study
+# tracedocs
 
-`project-to-study` is an agent-first documentation generator design inspired by
+`tracedocs` is an agent-first documentation generator design inspired by
 `codebase-to-course`, but focused on producing a complete Markdown study package
 for any software project.
 
@@ -22,7 +22,7 @@ version, then let Codex continue from the same instructions and templates.
 ## Core Idea
 
 `codebase-to-course` uses a strong skill file plus reference templates to turn a
-repo into a learning experience. `project-to-study` keeps that pattern:
+repo into a learning experience. `tracedocs` keeps that pattern:
 
 1. Read and understand the target codebase.
 2. Extract facts from source files, configs, README files, scripts, and tests.
@@ -64,7 +64,7 @@ study-docs/
 ## Repository Structure
 
 ```text
-project-to-study/
+tracedocs/
   SKILL.md
   AGENTS.md
   CLAUDE.md
@@ -97,7 +97,7 @@ Give Claude Code this repository and start with:
 
 ```text
 Read CLAUDE.md and prompts/claude-code-implementation.md, then implement the
-MVP for project-to-study.
+MVP for tracedocs.
 ```
 
 After Claude Code reaches its quota, continue with Codex:
@@ -118,16 +118,16 @@ python3 -m venv .venv
 .venv/bin/pip install -e ".[dev]"
 
 # Generate the study-docs package for any local repo
-.venv/bin/project-to-study /path/to/repo --out study-docs
+.venv/bin/tracedocs /path/to/repo --out study-docs
 
 # ...or straight from a Git URL (shallow-cloned to a temp dir, then cleaned up)
-.venv/bin/project-to-study https://github.com/owner/repo --out study-docs
+.venv/bin/tracedocs https://github.com/owner/repo --out study-docs
 
 # Choose an output style: standard (default), concise, teaching, or ops
-.venv/bin/project-to-study /path/to/repo --out study-docs --style teaching
+.venv/bin/tracedocs /path/to/repo --out study-docs --style teaching
 
 # Validate a generated package (exits non-zero on problems)
-.venv/bin/project-to-study validate study-docs
+.venv/bin/tracedocs validate study-docs
 ```
 
 Styles only change emphasis and verbosity, never facts or evidence:
@@ -139,9 +139,9 @@ Remote input accepts `https://`, `ssh://`, `git@host:owner/repo.git`, and the
 `--depth 1` clone. The generated docs record the original URL, not the temp
 path.
 
-After `pip install -e .`, the `project-to-study` command is on your PATH inside
+After `pip install -e .`, the `tracedocs` command is on your PATH inside
 the environment. The bare-path form shown above is equivalent to
-`project-to-study generate /path/to/repo --out study-docs`.
+`tracedocs generate /path/to/repo --out study-docs`.
 
 A committed sample of real output lives in
 [`examples/study-docs/`](examples/study-docs/), generated from the bundled
@@ -169,33 +169,33 @@ entity tables also list field names.
 
 Besides the CLI, this repo ships a Claude Code **skill** (`SKILL.md` +
 `references/`), the same pattern as `codebase-to-course`. Installed, it becomes a
-`/project-to-study` slash command: Claude reads `SKILL.md` and generates the docs
+`/tracedocs` slash command: Claude reads `SKILL.md` and generates the docs
 itself (more adaptive prose), optionally calling the CLI to extract facts first.
 
 Install it as a personal skill by copying `SKILL.md` and `references/` into
-`~/.claude/skills/project-to-study/`:
+`~/.claude/skills/tracedocs/`:
 
 ```bash
 # From the repository root
-mkdir -p ~/.claude/skills/project-to-study
-cp SKILL.md ~/.claude/skills/project-to-study/
-cp -R references ~/.claude/skills/project-to-study/
+mkdir -p ~/.claude/skills/tracedocs
+cp SKILL.md ~/.claude/skills/tracedocs/
+cp -R references ~/.claude/skills/tracedocs/
 ```
 
 Or symlink it so the skill tracks the repo (no re-copy after updates):
 
 ```bash
-ln -s "$(pwd)" ~/.claude/skills/project-to-study
+ln -s "$(pwd)" ~/.claude/skills/tracedocs
 ```
 
 Then **reload/restart Claude Code** (skills are discovered at startup). After
 that, run it from the prompt:
 
 ```text
-/project-to-study
+/tracedocs
 ```
 
-or trigger it in natural language, e.g. "use project-to-study to generate study
+or trigger it in natural language, e.g. "use tracedocs to generate study
 docs for /path/to/repo". The resulting layout matches the CLI output above.
 
 > Skill vs CLI: the skill is Claude-driven (adaptive, richer narrative); the CLI

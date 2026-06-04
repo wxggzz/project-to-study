@@ -1,9 +1,9 @@
 ---
-name: project-to-study
+name: tracedocs
 description: Generate a structured Markdown study documentation package from a codebase, including operation, deployment, learning, architecture, code introduction, troubleshooting, and maintenance manuals.
 ---
 
-# project-to-study
+# tracedocs
 
 Turn any codebase into a practical Markdown documentation package for learning,
 operating, deploying, and maintaining the project.

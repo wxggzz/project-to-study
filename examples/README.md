@@ -6,8 +6,8 @@ A committed, real sample of the generator's output. It was produced from the
 bundled test fixture so reviewers can see the result without running anything:
 
 ```bash
-project-to-study tests/fixtures/sample-node-app --out examples/study-docs
-project-to-study validate examples/study-docs
+tracedocs tests/fixtures/sample-node-app --out examples/study-docs
+tracedocs validate examples/study-docs
 ```
 
 The fixture (`tests/fixtures/sample-node-app/`) is a tiny Express service with a

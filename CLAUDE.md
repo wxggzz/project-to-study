@@ -1,6 +1,6 @@
 # Claude Code Instructions
 
-You are implementing `project-to-study`, inspired by
+You are implementing `tracedocs`, inspired by
 `zarazhangrui/codebase-to-course`.
 
 The goal is not to clone that project. The goal is to reuse its successful
@@ -44,7 +44,7 @@ tests/
 Suggested command:
 
 ```bash
-project-to-study /path/to/repo --out study-docs
+tracedocs /path/to/repo --out study-docs
 ```
 
 The CLI may be deterministic at first, with clear placeholders where LLM-backed

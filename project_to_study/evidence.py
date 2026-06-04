@@ -101,7 +101,7 @@ def _generation_log(facts: ProjectFacts, version: str, style_name: str) -> str:
         T.table(["Field", "Value"], stats_rows),
         T.heading(2, "Run Metadata"),
         T.bullets([
-            f"Tool: project-to-study v{version}",
+            f"Tool: tracedocs v{version}",
             f"Generated at: {now}",
             f"Style: {style_name}",
             "Mode: deterministic (no LLM)",

@@ -1,12 +1,12 @@
-"""Command-line interface for project-to-study.
+"""Command-line interface for tracedocs.
 
 Primary form (matches CLAUDE.md):
 
-    project-to-study /path/to/repo --out study-docs
+    tracedocs /path/to/repo --out study-docs
 
 Validation form:
 
-    project-to-study validate study-docs/
+    tracedocs validate study-docs/
 """
 
 from __future__ import annotations
@@ -25,11 +25,11 @@ from .writer import generate
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="project-to-study",
+        prog="tracedocs",
         description="Generate a Markdown study-docs package from a codebase.",
     )
     parser.add_argument("--version", action="version",
-                        version=f"project-to-study {__version__}")
+                        version=f"tracedocs {__version__}")
     sub = parser.add_subparsers(dest="command")
 
     gen = sub.add_parser("generate", help="Scan a repo and write study-docs/")
@@ -79,7 +79,7 @@ def _run_validate(path: str) -> int:
 def main(argv: Optional[List[str]] = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
 
-    # Allow the bare-path primary form: `project-to-study /path --out dir`.
+    # Allow the bare-path primary form: `tracedocs /path --out dir`.
     # If the first token is not a known subcommand or flag, treat it as generate.
     known = {"generate", "validate"}
     if argv and argv[0] not in known and not argv[0].startswith("-"):

@@ -3,7 +3,7 @@
 Use this prompt when asking Claude Code to implement the first version.
 
 ```text
-You are working in the project-to-study repository.
+You are working in the tracedocs repository.
 
 Goal:
 Build an MVP that generates a Markdown study documentation package from a
@@ -22,7 +22,7 @@ Read these files first:
 
 Implementation requirements:
 1. Create a simple CLI command:
-   project-to-study /path/to/repo --out study-docs
+   tracedocs /path/to/repo --out study-docs
 2. Scan the target repo for:
    - project name
    - language/framework signals

@@ -1,4 +1,4 @@
-"""project-to-study: generate a Markdown study-docs package from a codebase.
+"""tracedocs: generate a Markdown study-docs package from a codebase.
 
 This package implements the deterministic MVP described in CLAUDE.md and
 prompts/claude-code-implementation.md. It scans a target repository, extracts

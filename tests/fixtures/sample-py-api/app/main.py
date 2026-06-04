@@ -1,4 +1,4 @@
-"""Tiny FastAPI app used as a project-to-study test fixture."""
+"""Tiny FastAPI app used as a tracedocs test fixture."""
 import os
 
 from fastapi import FastAPI

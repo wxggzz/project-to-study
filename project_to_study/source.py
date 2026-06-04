@@ -63,7 +63,7 @@ def acquire(spec: str) -> Iterator[str]:
         return
 
     url = _normalize(spec)
-    tmp = tempfile.mkdtemp(prefix="project-to-study-")
+    tmp = tempfile.mkdtemp(prefix="tracedocs-")
     try:
         try:
             subprocess.run(
