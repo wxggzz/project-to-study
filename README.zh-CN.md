@@ -10,6 +10,8 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-8A2BE2)
 ![Output](https://img.shields.io/badge/output-Markdown%20%2B%20JSON-blue)
+[![Validate skill](https://github.com/wxggzz/tracedocs/actions/workflows/validate.yml/badge.svg)](https://github.com/wxggzz/tracedocs/actions/workflows/validate.yml)
+[![Live demo](https://github.com/wxggzz/tracedocs/actions/workflows/pages.yml/badge.svg)](https://wxggzz.github.io/tracedocs/)
 
 <p align="center">
   <img src="docs/assets/hero.zh.png" width="760"
@@ -44,7 +46,21 @@ flowchart LR
 | 部署到某托管平台 | — | **Unknown —— 仓库中无记录** |
 
 完整、已校验的样例见 [`examples/study-docs/`](examples/study-docs/)(用本 skill
-给本项目自己的 CLI 生成的文档)。
+给本项目自己的 CLI 生成的文档),也可以直接打开
+[在线 demo](https://wxggzz.github.io/tracedocs/)。
+
+## 不幻觉测试
+
+把 tracedocs 指向一个**没有** `Dockerfile`、部署工作流、托管平台配置、部署文档的仓库,
+然后问它怎么部署:
+
+| 问题 | 普通 AI 文档常见写法 | tracedocs 写法 |
+| --- | --- | --- |
+| "这个项目怎么部署?" | 看起来合理但其实编造的步骤,比如"推到 main 后 CI 构建 Docker 镜像并部署到 AWS"。 | **未发现部署配置。部署路径未记录。** |
+
+样例输出在 [`03-deployment-manual.md`](examples/study-docs/03-deployment-manual.md)
+里展示了这种拒绝编造,并把缺口记录在
+[`_evidence/assumptions.md`](examples/study-docs/_evidence/assumptions.md)。
 
 ## 核心特性
 
@@ -55,6 +71,15 @@ flowchart LR
 - **缺口被记录** —— 未知项和假设都写进 `_evidence/`,绝不糊弄。
 - **任意 agent 可用** —— 本质就是 `SKILL.md` + references;Claude Code、Codex
   以及任何能读文件的 coding agent 都能跑。
+
+## 兼容矩阵
+
+| Agent | 安装方式 | 调用方式 |
+| --- | --- | --- |
+| Claude Code 插件 | `/plugin marketplace add https://github.com/wxggzz/tracedocs` → `/plugin install tracedocs@tracedocs` | `/tracedocs:tracedocs` |
+| Claude Code 复制安装 | 复制 `SKILL.md` + `references/` 到 `~/.claude/skills/tracedocs/` | `/tracedocs` |
+| Codex | 复制 `SKILL.md` + `references/` 到 `~/.codex/skills/tracedocs/` | `use tracedocs to document ./my-app` |
+| 其它可读文件的 agent | 让 agent 读取 `SKILL.md` + `references/` | 要求它使用 tracedocs workflow |
 
 ## 安装
 

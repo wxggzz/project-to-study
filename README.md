@@ -10,6 +10,8 @@ Markdown **+ a machine-readable `index.json`** — AI-ready and living in your r
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-8A2BE2)
 ![Output](https://img.shields.io/badge/output-Markdown%20%2B%20JSON-blue)
+[![Validate skill](https://github.com/wxggzz/tracedocs/actions/workflows/validate.yml/badge.svg)](https://github.com/wxggzz/tracedocs/actions/workflows/validate.yml)
+[![Live demo](https://github.com/wxggzz/tracedocs/actions/workflows/pages.yml/badge.svg)](https://wxggzz.github.io/tracedocs/)
 
 <p align="center">
   <img src="docs/assets/hero.png" width="760"
@@ -46,7 +48,22 @@ plainly instead of guessed:
 | Deploys to a managed host | — | **Unknown — not documented in the repo** |
 
 See [`examples/study-docs/`](examples/study-docs/) for a complete, validated
-sample (the skill documenting this project's own CLI).
+sample (the skill documenting this project's own CLI), or open the
+[live demo](https://wxggzz.github.io/tracedocs/).
+
+## Hallucination Test
+
+Point tracedocs at a repo with **no** `Dockerfile`, deploy workflow, hosting
+config, or deployment docs, then ask how to deploy it:
+
+| Question | Generic AI docs often write | tracedocs writes |
+| --- | --- | --- |
+| "How do I deploy this?" | Plausible but invented steps like "push to main, CI builds a Docker image, deploy to AWS." | **No deployment configuration was found. Deployment is undocumented.** |
+
+The sample output demonstrates this refusal in
+[`03-deployment-manual.md`](examples/study-docs/03-deployment-manual.md) and
+records the gap in
+[`_evidence/assumptions.md`](examples/study-docs/_evidence/assumptions.md).
 
 ## Key Features
 
@@ -60,6 +77,15 @@ sample (the skill documenting this project's own CLI).
   glossed over.
 - **Works with any agent** — it's plain `SKILL.md` + references; Claude Code,
   Codex, and any coding agent that can read files can run it.
+
+## Compatibility Matrix
+
+| Agent | Install | Invoke |
+| --- | --- | --- |
+| Claude Code plugin | `/plugin marketplace add https://github.com/wxggzz/tracedocs` → `/plugin install tracedocs@tracedocs` | `/tracedocs:tracedocs` |
+| Claude Code skill copy | Copy `SKILL.md` + `references/` to `~/.claude/skills/tracedocs/` | `/tracedocs` |
+| Codex | Copy `SKILL.md` + `references/` to `~/.codex/skills/tracedocs/` | `use tracedocs to document ./my-app` |
+| Other file-reading agents | Point the agent at `SKILL.md` + `references/` | Ask it to use the tracedocs workflow |
 
 ## Install
 
