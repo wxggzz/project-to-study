@@ -1,5 +1,7 @@
 # tracedocs
 
+**English** · [简体中文](README.zh-CN.md)
+
 > **Turn any codebase into evidence-grounded docs your team and AI agents can trust — a Claude Code skill.**
 
 Every claim cites its source. It **never invents deployment steps**. Output is
@@ -46,7 +48,11 @@ plainly instead of guessed:
 See [`examples/study-docs/`](examples/study-docs/) for a complete, validated
 sample (the skill documenting this project's own CLI).
 
-## Install (as a Claude Code skill)
+## Install
+
+### Claude Code
+
+Copy install:
 
 ```bash
 git clone https://github.com/wxggzz/tracedocs
@@ -54,17 +60,56 @@ mkdir -p ~/.claude/skills/tracedocs
 cp -R tracedocs/SKILL.md tracedocs/references ~/.claude/skills/tracedocs/
 ```
 
-Then **reload/restart Claude Code** — skills are discovered at startup. (Prefer
-a live link? `ln -s "$(pwd)/tracedocs" ~/.claude/skills/tracedocs`.)
+Live-link install for development:
+
+```bash
+git clone https://github.com/wxggzz/tracedocs
+cd tracedocs
+mkdir -p ~/.claude/skills
+ln -s "$(pwd)" ~/.claude/skills/tracedocs
+```
+
+Then **reload/restart Claude Code** — skills are discovered at startup.
+
+### Codex
+
+Copy install:
+
+```bash
+git clone https://github.com/wxggzz/tracedocs
+mkdir -p ~/.codex/skills/tracedocs
+cp -R tracedocs/SKILL.md tracedocs/references ~/.codex/skills/tracedocs/
+```
+
+Live-link install for development:
+
+```bash
+git clone https://github.com/wxggzz/tracedocs
+cd tracedocs
+mkdir -p ~/.codex/skills
+ln -s "$(pwd)" ~/.codex/skills/tracedocs
+```
+
+Then **reload/restart Codex** so it can discover the skill.
 
 ## Use
 
 ```text
-/tracedocs           # or: "use tracedocs to document ./my-app"
+/tracedocs           # Claude Code
+use tracedocs to document ./my-app
 ```
 
 Give it a local path, a Git URL (cloned to a temp dir), or nothing (uses the
 current directory). Output lands in `study-docs/`.
+
+### Try It In 30 Seconds
+
+Paste this into Claude Code or Codex from any repository:
+
+```text
+Use tracedocs to generate evidence-grounded study docs for this repository.
+Write the output to study-docs/.
+```
 
 ## tracedocs vs codebase-to-course
 
