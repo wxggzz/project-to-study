@@ -12,8 +12,8 @@
 ![Output](https://img.shields.io/badge/output-Markdown%20%2B%20JSON-blue)
 
 <p align="center">
-  <img src="docs/assets/hero.png" width="760"
-       alt="生成的 study-docs 包:证据/置信度概览(Verified/Inferred/Unknown/Needs confirmation)、文档索引、快速上手,以及『拒绝编造的缺口』面板。" />
+  <img src="docs/assets/hero.zh.png" width="760"
+       alt="生成的 study-docs 包:证据/置信度概览(已验证/推断/未知/待确认)、文档索引、快速上手,以及『拒绝编造的缺口』面板。" />
 </p>
 
 **痛点:** AI 文档工具会编造部署步骤,还会悄悄过时。**tracedocs** 生成的文档里,
