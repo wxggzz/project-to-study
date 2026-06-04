@@ -121,3 +121,28 @@ the response, then do the rest.
 
 **After approval**, add the badge to the README:
 `[![Mentioned in Awesome Claude Code](https://awesome.re/mentioned-badge.svg)](https://github.com/hesreallyhim/awesome-claude-code)`
+
+---
+
+## More distribution channels (skill lists & hubs)
+
+These are additional high-traffic lists. Each is **PR-based** (read its
+CONTRIBUTING first, one focused PR each, pick the right category, don't spam).
+Reusable one-line entry for awesome-style lists:
+
+```markdown
+- [tracedocs](https://github.com/wxggzz/tracedocs) — Evidence-grounded project docs that cite their sources, plus an AI-ready `index.json`; never invents deployment steps. (Claude Code skill · MIT)
+```
+
+| List | ★ | Branch | How to submit |
+| --- | --- | --- | --- |
+| [ComposioHQ/awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills) | 63k | `master` | PR. Their CONTRIBUTING wants a folder `tracedocs/SKILL.md` (real use case, tested, safe, portable) — consider a self-contained SKILL.md that links back here for `references/`. Heavier but highest reach. |
+| [travisvn/awesome-claude-skills](https://github.com/travisvn/awesome-claude-skills) | 13k | `main` | Simple PR: add the bullet above under the right category in `README.md` (see CONTRIBUTING.md). |
+| [BehiSecc/awesome-claude-skills](https://github.com/BehiSecc/awesome-claude-skills) | 9k | `main` | Fork → add the bullet → PR (or open an Issue). |
+| [davepoon/buildwithclaude](https://github.com/davepoon/buildwithclaude) | 3k | `main` | Plugin marketplace/discovery hub. PR adding tracedocs per their `plugins/` structure — a natural fit now that we ship a `.claude-plugin` plugin. |
+
+Tips:
+- Lead with the evidence/no-hallucination angle and link the validated sample
+  (`examples/study-docs/`) — these lists value tested, focused resources.
+- Suggested category on most lists: **Documentation** / **Developer Tools**.
+- Space the PRs out over a few days; engage with maintainer feedback.
