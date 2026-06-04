@@ -2,10 +2,15 @@
 
 **English** · [简体中文](README.zh-CN.md)
 
-> **Turn any codebase into evidence-grounded docs your team and AI agents can trust — a Claude Code skill.**
+> **Generate trusted project docs from any codebase — a Claude Code skill.**
 
-Every claim cites its source. It **never invents deployment steps**. Output is
-Markdown **+ a machine-readable `index.json`** — AI-ready and living in your repo.
+Point tracedocs at a local repo or Git URL. It creates a `study-docs/` package
+with project overview, quickstart, deployment, architecture, API, data model,
+troubleshooting, and maintenance docs — plus a machine-readable `index.json`
+for AI agents.
+
+Every important claim cites source evidence. If the repo does not prove a detail
+(for example deployment), tracedocs records it as `Unknown` instead of guessing.
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-8A2BE2)
@@ -18,10 +23,16 @@ Markdown **+ a machine-readable `index.json`** — AI-ready and living in your r
        alt="A generated study-docs package: an evidence/confidence summary (Verified/Inferred/Unknown/Needs confirmation), a document index, a quickstart, and a 'gaps it refused to invent' panel." />
 </p>
 
-**The problem:** AI doc generators hallucinate deployment steps and quietly go
-stale. **tracedocs** generates documentation where every operational
-claim is labelled `Verified` / `Inferred` / `Unknown` / `Needs confirmation` and
-tied to the file it came from — and it *refuses* to write steps it can't source.
+**In plain English:** tracedocs turns a code repository into a maintainable
+project handbook for onboarding humans, briefing AI coding agents, and handing
+off operations without hallucinated steps.
+
+## At A Glance
+
+| Input | Output | Trust layer |
+| --- | --- | --- |
+| Local path or Git URL | Repo-native Markdown manuals in `study-docs/` | Source citations + `Verified` / `Inferred` / `Unknown` / `Needs confirmation` labels |
+| Any codebase an agent can read | AI-ready `index.json` | Unknowns recorded in `_evidence/` instead of invented |
 
 ## How It Works
 

@@ -2,10 +2,14 @@
 
 [English](README.md) · **简体中文**
 
-> **把任意代码库变成你的团队和 AI agent 都能信任的、有据可循的文档 —— 一个 Claude Code skill。**
+> **从任意代码库生成可信项目文档 —— 一个 Claude Code skill。**
 
-每条结论都标注来源。它**绝不编造部署步骤**。产出是 Markdown **+ 机器可读的
-`index.json`** —— 对 AI 友好,且随仓库一起留存。
+把 tracedocs 指向本地仓库或 Git URL。它会生成 `study-docs/` 文档包:项目介绍、
+快速上手、部署手册、架构说明、API、数据模型、排错和维护文档,并附带给 AI agent
+读取的 `index.json`。
+
+每条重要结论都会标注来源。仓库里没有证据的内容(比如部署方式)会记录为 `Unknown`,
+不会猜。
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-8A2BE2)
@@ -18,9 +22,15 @@
        alt="生成的 study-docs 包:证据/置信度概览(已验证/推断/未知/待确认)、文档索引、快速上手,以及『拒绝编造的缺口』面板。" />
 </p>
 
-**痛点:** AI 文档工具会编造部署步骤,还会悄悄过时。**tracedocs** 生成的文档里,
-每条操作类结论都带 `Verified` / `Inferred` / `Unknown` / `Needs confirmation`
-标签,并指向它的来源文件 —— 凡是无法溯源的步骤,它**拒绝写**。
+**一句话:** tracedocs 把代码仓库整理成一份可维护的项目说明书,用于新人上手、
+AI agent 理解项目,以及运维/交接,但不会编造仓库里没有证据的步骤。
+
+## 一眼看懂
+
+| 输入 | 输出 | 可信层 |
+| --- | --- | --- |
+| 本地路径或 Git URL | `study-docs/` 里的仓库原生 Markdown 手册 | 来源引用 + `Verified` / `Inferred` / `Unknown` / `Needs confirmation` 标签 |
+| 任何 agent 能读取的代码库 | 给 AI agent 使用的 `index.json` | 未知项写入 `_evidence/`,不编造 |
 
 ## 工作原理
 

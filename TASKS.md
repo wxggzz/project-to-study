@@ -2,6 +2,10 @@
 
 ## Completed
 
+- Clarified the first screen of `README.md` and `README.zh-CN.md` so new
+  visitors immediately understand tracedocs as: repo path/Git URL in,
+  `study-docs/` Markdown manuals plus AI-ready `index.json` out, with source
+  evidence and unknowns instead of invented deployment steps.
 - Added `docs/visual-system.md`, a lightweight Figma-style component spec for
   tracedocs previews: colors, typography, spacing, cards, evidence labels, code
   blocks, flow nodes, and responsive rules.
@@ -37,9 +41,8 @@
 
 ## Next Recommended Task
 
-- After this reaches `main`, wait for the Pages workflow, then check
-  `https://wxggzz.github.io/tracedocs/` and click a few expandable document
-  cards.
+- After this reaches GitHub, check the repository landing page and confirm the
+  first screen explains the product clearly before visitors scroll.
 
 ## Known Blockers
 
@@ -64,6 +67,12 @@
 - `git branch --show-current`
 - `git log --oneline --decorate --max-count=5`
 - `git pull --ff-only`
+- `sed -n '1,120p' README.md`
+- `sed -n '1,120p' README.zh-CN.md`
+- `sed -n '1,180p' TASKS.md`
+- `sed -n '1,120p' SKILL.md`
+- `sed -n '1,120p' references/handoff-protocol.md`
+- `test -f docs/architecture.md && sed -n '1,120p' docs/architecture.md || printf 'MISSING docs/architecture.md\n'`
 - `scripts/sync-plugin.sh`
 - `chmod +x scripts/validate-skill.py`
 - `python3 scripts/validate-skill.py`
