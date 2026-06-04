@@ -82,6 +82,7 @@ class Entity:
     name: str
     kind: str            # e.g. "SQLAlchemy model", "Prisma model", "SQL table"
     evidence: str        # source file (relative path)
+    fields: List[str] = field(default_factory=list)  # field names when known
 
 
 @dataclass

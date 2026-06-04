@@ -74,7 +74,6 @@ _GQL_FIELD = re.compile(r"(?m)^\s*(\w+)\s*(?:\([^)]*\))?\s*:")
 
 # --- Entity patterns ------------------------------------------------------ #
 
-_PRISMA = re.compile(r"(?m)^\s*model\s+(\w+)\s*\{")
 _SQLALCHEMY = re.compile(r"class\s+(\w+)\s*\([^)]*\b(?:Base|db\.Model)\b[^)]*\)")
 _DJANGO_MODEL = re.compile(r"class\s+(\w+)\s*\([^)]*\bmodels\.Model\b[^)]*\)")
 _MONGOOSE = re.compile(r"""(?:mongoose\.)?model\(\s*['"](\w+)['"]""")
@@ -82,10 +81,17 @@ _TYPEORM = re.compile(
     r"@Entity\([^)]*\)\s*(?:export\s+)?(?:abstract\s+)?class\s+(\w+)")
 _SQL_TABLE = re.compile(
     r'(?i)create\s+table\s+(?:if\s+not\s+exists\s+)?["\'`]?([\w.]+)')
-_PROTO_MESSAGE = re.compile(r"(?m)^\s*message\s+(\w+)\s*\{")
-# GraphQL type/input/interface/enum/scalar definitions.
-_GQL_TYPE = re.compile(
-    r"(?m)^\s*(?:type|input|interface|enum|scalar)\s+(\w+)")
+
+# Block-structured schemas: capture the name AND the body so we can list fields.
+_PRISMA_BLOCK = re.compile(r"(?m)^\s*model\s+(\w+)\s*\{([^}]*)\}", re.DOTALL)
+# Field lines in a Prisma model start with an identifier; skip @@block attrs.
+_PRISMA_FIELD = re.compile(r"(?m)^\s*(\w+)\s+\S")
+_PROTO_MSG_BLOCK = re.compile(r"(?m)^\s*message\s+(\w+)\s*\{([^}]*)\}", re.DOTALL)
+_PROTO_FIELD = re.compile(r"(?m)^\s*(?:repeated\s+)?[\w.]+\s+(\w+)\s*=\s*\d+")
+# GraphQL type/input/interface carry a field block; enum/scalar do not.
+_GQL_TYPE_BLOCK = re.compile(
+    r"(?m)^\s*(?:type|input|interface)\s+(\w+)\s*\{([^}]*)\}", re.DOTALL)
+_GQL_ENUM_SCALAR = re.compile(r"(?m)^\s*(?:enum|scalar)\s+(\w+)")
 # Operation containers are routes, not entities.
 _GQL_OP_TYPES = {"Query", "Mutation", "Subscription"}
 
@@ -172,16 +178,20 @@ def _extract_routes(text, ext, fname, rel, routes) -> None:
                 _add_route(routes, op_type.upper(), field, rel, "GraphQL")
 
 
-def _add_entity(entities: dict, name: str, kind: str, rel: str) -> None:
+def _add_entity(entities: dict, name: str, kind: str, rel: str,
+                fields=None) -> None:
     if not name:
         return
-    entities.setdefault((name, kind), Entity(name=name, kind=kind, evidence=rel))
+    entities.setdefault(
+        (name, kind),
+        Entity(name=name, kind=kind, evidence=rel, fields=list(fields or [])))
 
 
 def _extract_entities(text, ext, rel, entities) -> None:
     if ext == ".prisma":
-        for name in _PRISMA.findall(text):
-            _add_entity(entities, name, "Prisma model", rel)
+        for name, body in _PRISMA_BLOCK.findall(text):
+            _add_entity(entities, name, "Prisma model", rel,
+                        _PRISMA_FIELD.findall(body))
     elif ext == ".sql":
         for name in _SQL_TABLE.findall(text):
             _add_entity(entities, name, "SQL table", rel)
@@ -196,9 +206,13 @@ def _extract_entities(text, ext, rel, entities) -> None:
         for name in _TYPEORM.findall(text):
             _add_entity(entities, name, "TypeORM entity", rel)
     elif ext == ".proto":
-        for name in _PROTO_MESSAGE.findall(text):
-            _add_entity(entities, name, "Protobuf message", rel)
+        for name, body in _PROTO_MSG_BLOCK.findall(text):
+            _add_entity(entities, name, "Protobuf message", rel,
+                        _PROTO_FIELD.findall(body))
     elif ext in {".graphql", ".gql"}:
-        for name in _GQL_TYPE.findall(text):
+        for name, body in _GQL_TYPE_BLOCK.findall(text):
             if name not in _GQL_OP_TYPES:
-                _add_entity(entities, name, "GraphQL type", rel)
+                _add_entity(entities, name, "GraphQL type", rel,
+                            _GQL_FIELD.findall(body))
+        for name in _GQL_ENUM_SCALAR.findall(text):
+            _add_entity(entities, name, "GraphQL type", rel)

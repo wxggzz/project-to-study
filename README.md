@@ -162,7 +162,8 @@ Flask, Django, Go `net/http`, gRPC `.proto`, GraphQL operations) and data
 entities (Prisma, SQLAlchemy, Django models, Mongoose, TypeORM, SQL
 `CREATE TABLE`, Protobuf `message`, GraphQL types) are pulled from the source
 and listed in `07-api-and-integrations.md` and `08-data-model.md`, each with its
-source file as evidence.
+source file as evidence. For block schemas (Prisma, Protobuf, GraphQL) the
+entity tables also list field names.
 
 ## MVP Definition
 

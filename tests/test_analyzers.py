@@ -69,6 +69,17 @@ def test_grpc_services_and_messages_extracted(schemas_fixture_repo):
     assert ("User", "Protobuf message") in by_kind
 
 
+def test_entity_fields_extracted(schemas_fixture_repo):
+    facts = scan(schemas_fixture_repo)
+    by = {(e.name, e.kind): e for e in facts.entities}
+    assert by[("User", "GraphQL type")].fields == ["id", "name"]
+    assert by[("CreateUserInput", "GraphQL type")].fields == ["name"]
+    assert by[("User", "Protobuf message")].fields == ["id", "name"]
+    assert by[("GetUserRequest", "Protobuf message")].fields == ["id"]
+    # Prisma block fields, skipping @@index block attributes.
+    assert by[("Account", "Prisma model")].fields == ["id", "email", "name"]
+
+
 def test_schemas_render_in_docs(tmp_path, schemas_fixture_repo):
     facts = scan(schemas_fixture_repo)
     out = tmp_path / "study-docs"
@@ -80,6 +91,8 @@ def test_schemas_render_in_docs(tmp_path, schemas_fixture_repo):
     data = (out / "08-data-model.md").read_text(encoding="utf-8")
     assert "Protobuf message" in data
     assert "GraphQL type" in data
+    assert "Fields" in data            # the new column header
+    assert "id, name" in data          # extracted field list
 
 
 def test_no_false_routes_in_plain_repo(tmp_path):

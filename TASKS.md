@@ -50,7 +50,8 @@ and a committed sample lives in `examples/study-docs/`.
       SQL `CREATE TABLE`, Protobuf `message`, GraphQL types). Routes and
       entities are rendered as tables in `07-api-and-integrations.md` and
       `08-data-model.md`, with the source file as evidence, and feed the
-      document planner's applicability decision.
+      document planner's applicability decision. For block schemas (Prisma,
+      Protobuf, GraphQL) the entity tables also list field names.
 - [x] **`--style` option** (`project_to_study/style.py`): `standard` (default),
       `concise` (drops optional prose), `teaching` (plain-English callouts +
       glossary), `ops` (front-loads operation/deployment/troubleshooting). Style
@@ -61,8 +62,10 @@ and a committed sample lives in `examples/study-docs/`.
 
 - [ ] Add LLM provider abstraction (Phase 3 of the roadmap). Keep evidence
       visible; never let the LLM invent deployment details.
-- [ ] Capture route handler names and entity fields (not just paths/names), and
-      add more ORMs (Sequelize, Peewee, GORM struct tags).
+- [ ] Capture route handler names, and entity fields for indented-class ORMs
+      (SQLAlchemy/Django/Mongoose/TypeORM); add more ORMs (Sequelize, Peewee,
+      GORM struct tags). Block-schema field extraction (Prisma/Protobuf/GraphQL)
+      is done.
 
 ## How To Run
 
@@ -75,7 +78,7 @@ python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
 
 ## Handoff Notes
 
-- Commands run: `pytest -q` (47 passed); CLI generate + validate on the fixtures
+- Commands run: `pytest -q` (48 passed); CLI generate + validate on the fixtures
   (exit 0); all four styles validate; remote-clone failure path exits 2.
 - Files added: `project_to_study/*.py` (incl. `source.py`, `analyzers.py`,
   `style.py`), `tests/*` (incl. `test_source.py`, `test_analyzers.py`,
