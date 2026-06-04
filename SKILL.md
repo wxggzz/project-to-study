@@ -83,6 +83,15 @@ factual; do not invent fields. Minimum shape:
 `routes` and `entities` are optional — include them only when the project
 exposes an API or defines data models.
 
+### Optional: `index.html` preview
+
+You may also emit a single self-contained `study-docs/index.html` for browsing
+and screenshots. It must be **derived only from the docs** (no new facts), be a
+**single file with no build step and no JS framework**, link back to the
+Markdown and `_evidence/` files, and be labelled a preview. The Markdown remains
+the source of truth. See `examples/study-docs/index.html` for the reference.
+Skip it if you cannot keep it tiny and faithful.
+
 ## Phase 1: Analyze The Codebase
 
 Read enough of the project to understand:

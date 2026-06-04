@@ -25,6 +25,8 @@ repository. This package is a worked example of what the skill produces.
 - [`index.json`](index.json) — a machine-readable map of this package
   (documents, commands, env-var names, confidence counts, unknowns) for agents
   and automation.
+- [`index.html`](index.html) — an optional single-file preview for browsing and
+  screenshots (derived from the docs; Markdown stays the source of truth).
 
 ## Evidence
 

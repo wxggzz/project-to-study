@@ -82,6 +82,7 @@ operations, and AI-agent handoff.
 study-docs/
   README.md                       # index + generation date + confidence notes
   index.json                      # machine-readable manifest (AI-ready)
+  index.html                      # optional single-file preview (browse/screenshot)
   00-project-overview.md
   01-quickstart.md
   02-operation-manual.md
