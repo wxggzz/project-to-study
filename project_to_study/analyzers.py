@@ -54,20 +54,18 @@ _JS_ROUTE = re.compile(
     re.IGNORECASE,
 )
 _IDENT = re.compile(r"[A-Za-z_$][\w$.]*")
-# Python route decorators (FastAPI/APIRouter), matched independently so a
-# function carrying several decorators yields one route each. Anchored to line
-# start (allowing indentation) so commented-out decorators (`# @app.get(...)`)
-# are not matched. The handler is the def that follows (see _PY_DEF).
-_PY_DECOR = re.compile(
-    r"(?m)^[ \t]*@\w+\.(get|post|put|patch|delete|options|head)\("
-    r"\s*['\"]([^'\"]+)['\"]",
+# FastAPI/APIRouter and Flask route decorators. Matched only up to the opening
+# "(" and anchored to line start (indentation allowed) so commented-out
+# decorators (`# @app.get(...)`) are not matched and each decorator yields its
+# own route. The full argument list is then read with a paren-balanced scanner,
+# so strings or nested calls in the args can't confuse path/method detection,
+# and the handler def is searched only AFTER the decorator's closing ")".
+_PY_DECOR_CALL = re.compile(
+    r"(?m)^[ \t]*@\w+\.(get|post|put|patch|delete|options|head)\(",
     re.IGNORECASE,
 )
-# Flask: @app.route(...) — the full argument list is read with a paren-balanced
-# scanner (so nested calls like defaults=dict(...) don't end it early), then the
-# path and methods are pulled from those args.
 _PY_ROUTE_CALL = re.compile(r"(?m)^[ \t]*@\w+\.route\(", re.IGNORECASE)
-_FLASK_PATH = re.compile(r"['\"]([^'\"]+)['\"]")
+_DECOR_PATH = re.compile(r"['\"]([^'\"]+)['\"]")  # first string literal = path
 _FLASK_METHODS = re.compile(r"methods\s*=\s*\[([^\]]*)\]", re.IGNORECASE)
 # The def a decorator applies to (its handler name); see _handler_after.
 _PY_DEF = re.compile(r"\bdef\s+(\w+)\s*\(")
@@ -326,17 +324,25 @@ def _extract_routes(text, ext, fname, rel, routes) -> None:
             _add_route(routes, "—", path, rel, "Go net/http", handler)
     elif ext == ".py":
         # Each decorator is matched on its own (so a function with several
-        # decorators yields a route each); the handler is the next def within a
-        # small window, so an unrelated later def is not picked up.
-        for m in _PY_DECOR.finditer(text):
-            _add_route(routes, m.group(1), m.group(2), rel,
-                       "FastAPI/decorator", _handler_after(text, m.end()))
+        # decorators yields a route each). For both FastAPI and Flask, read the
+        # full decorator call with a paren-balanced scanner, then resolve the
+        # handler from the def that follows the closing ")".
+        for m in _PY_DECOR_CALL.finditer(text):
+            end = _balanced(text, m.end(), "(", ")", hash_comment=True)
+            args = (text[m.end():end - 1]
+                    if m.end() < end <= len(text) and text[end - 1] == ")"
+                    else text[m.end():end])
+            pm = _DECOR_PATH.search(args)
+            if not pm:
+                continue
+            _add_route(routes, m.group(1), pm.group(1), rel,
+                       "FastAPI/decorator", _handler_after(text, end))
         for m in _PY_ROUTE_CALL.finditer(text):
             end = _balanced(text, m.end(), "(", ")", hash_comment=True)
             args = (text[m.end():end - 1]
                     if m.end() < end <= len(text) and text[end - 1] == ")"
                     else text[m.end():end])
-            pm = _FLASK_PATH.search(args)
+            pm = _DECOR_PATH.search(args)
             if not pm:
                 continue
             methods = _FLASK_METHODS.search(args)

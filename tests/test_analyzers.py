@@ -270,6 +270,24 @@ def test_fastapi_handler_with_long_decorator_args(tmp_path):
     assert by[("GET", "/big")].handler == "big_handler"
 
 
+# --- Regression test for Codex PR #1 fourth-round finding ----------------- #
+
+def test_fastapi_handler_ignores_def_inside_decorator_args(tmp_path):
+    repo = _write(
+        tmp_path, "main.py",
+        "from fastapi import FastAPI\n"
+        "app = FastAPI()\n\n"
+        "@app.get('/weird',\n"
+        "         description='docs say def fake(): not a handler')\n"
+        "def real_handler():\n"
+        "    return {}\n",
+    )
+    by = {(r.method, r.path): r for r in scan(repo).routes}
+    # The `def fake()` lives inside the decorator's description string; the real
+    # handler is the def after the decorator's closing paren.
+    assert by[("GET", "/weird")].handler == "real_handler"
+
+
 def test_no_false_routes_in_plain_repo(tmp_path):
     bare = tmp_path / "bare"
     bare.mkdir()
