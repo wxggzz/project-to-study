@@ -4,6 +4,12 @@ This is the Phase 2 step from ``docs/roadmap.md``: instead of only detecting
 *whether* a project exposes an API or uses a database, it extracts the concrete
 routes and entities so the generated docs list real endpoints and models.
 
+Covered surfaces: REST-style routes (Express/Node, FastAPI/decorator, Flask,
+Django ``urls.py``, Go ``net/http``), gRPC service methods (``.proto``), and
+GraphQL operations (``.graphql``/``.gql``). Entities come from Prisma,
+SQLAlchemy, Django models, Mongoose, TypeORM, SQL ``CREATE TABLE``, Protobuf
+``message``, and GraphQL ``type``/``input``/``interface``/``enum``.
+
 Everything here is deterministic regex/string analysis over the source tree —
 no execution, no parsing of untrusted config, no network. Matches are
 best-effort and tagged with their source file as evidence; ambiguous results
@@ -27,7 +33,10 @@ _IGNORE_DIRS = {
     ".cache", "tmp", ".terraform",
 }
 
-_SOURCE_EXT = {".js", ".jsx", ".ts", ".tsx", ".py", ".go", ".prisma", ".sql", ".rb"}
+_SOURCE_EXT = {
+    ".js", ".jsx", ".ts", ".tsx", ".py", ".go", ".prisma", ".sql", ".rb",
+    ".proto", ".graphql", ".gql",
+}
 
 _MAX_FILES = 3000
 _MAX_BYTES = 600_000
@@ -55,6 +64,13 @@ _PY_FLASK = re.compile(
 _DJANGO_URL = re.compile(r"\b(?:re_path|path|url)\(\s*r?['\"]([^'\"]*)['\"]")
 # Go net/http: http.HandleFunc("/path", handler)
 _GO_HANDLEFUNC = re.compile(r'HandleFunc\(\s*"(/[^"]*)"')
+# gRPC service methods: rpc GetUser (Req) returns (Resp);
+_PROTO_RPC = re.compile(r"\brpc\s+(\w+)\s*\(")
+# GraphQL operation blocks: type Query { ... } / Mutation / Subscription
+_GQL_OP_BLOCK = re.compile(
+    r"\btype\s+(Query|Mutation|Subscription)\s*\{([^}]*)\}", re.DOTALL)
+# A field line inside a GraphQL block: name(args): Type  /  name: Type
+_GQL_FIELD = re.compile(r"(?m)^\s*(\w+)\s*(?:\([^)]*\))?\s*:")
 
 # --- Entity patterns ------------------------------------------------------ #
 
@@ -66,6 +82,12 @@ _TYPEORM = re.compile(
     r"@Entity\([^)]*\)\s*(?:export\s+)?(?:abstract\s+)?class\s+(\w+)")
 _SQL_TABLE = re.compile(
     r'(?i)create\s+table\s+(?:if\s+not\s+exists\s+)?["\'`]?([\w.]+)')
+_PROTO_MESSAGE = re.compile(r"(?m)^\s*message\s+(\w+)\s*\{")
+# GraphQL type/input/interface/enum/scalar definitions.
+_GQL_TYPE = re.compile(
+    r"(?m)^\s*(?:type|input|interface|enum|scalar)\s+(\w+)")
+# Operation containers are routes, not entities.
+_GQL_OP_TYPES = {"Query", "Mutation", "Subscription"}
 
 
 def analyze(root: Path, facts: ProjectFacts) -> None:
@@ -141,6 +163,13 @@ def _extract_routes(text, ext, fname, rel, routes) -> None:
         if fname == "urls.py":
             for path in _DJANGO_URL.findall(text):
                 _add_route(routes, "—", "/" + path.lstrip("^/"), rel, "Django")
+    elif ext == ".proto":
+        for method in _PROTO_RPC.findall(text):
+            _add_route(routes, "RPC", method, rel, "gRPC")
+    elif ext in {".graphql", ".gql"}:
+        for op_type, body in _GQL_OP_BLOCK.findall(text):
+            for field in _GQL_FIELD.findall(body):
+                _add_route(routes, op_type.upper(), field, rel, "GraphQL")
 
 
 def _add_entity(entities: dict, name: str, kind: str, rel: str) -> None:
@@ -166,3 +195,10 @@ def _extract_entities(text, ext, rel, entities) -> None:
             _add_entity(entities, name, "Mongoose model", rel)
         for name in _TYPEORM.findall(text):
             _add_entity(entities, name, "TypeORM entity", rel)
+    elif ext == ".proto":
+        for name in _PROTO_MESSAGE.findall(text):
+            _add_entity(entities, name, "Protobuf message", rel)
+    elif ext in {".graphql", ".gql"}:
+        for name in _GQL_TYPE.findall(text):
+            if name not in _GQL_OP_TYPES:
+                _add_entity(entities, name, "GraphQL type", rel)

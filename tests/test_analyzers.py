@@ -43,6 +43,45 @@ def test_routes_and_entities_render_in_docs(tmp_path, py_fixture_repo):
     assert "SQLAlchemy model" in data
 
 
+def test_graphql_operations_and_types_extracted(schemas_fixture_repo):
+    facts = scan(schemas_fixture_repo)
+    routes = {(r.method, r.path) for r in facts.routes}
+    assert ("QUERY", "users") in routes
+    assert ("QUERY", "user") in routes
+    assert ("MUTATION", "createUser") in routes
+
+    by_kind = {(e.name, e.kind) for e in facts.entities}
+    assert ("User", "GraphQL type") in by_kind
+    assert ("CreateUserInput", "GraphQL type") in by_kind
+    assert ("Role", "GraphQL type") in by_kind
+    # Operation containers must NOT be treated as entities.
+    assert not any(e.name in {"Query", "Mutation"} for e in facts.entities)
+
+
+def test_grpc_services_and_messages_extracted(schemas_fixture_repo):
+    facts = scan(schemas_fixture_repo)
+    routes = {(r.method, r.path) for r in facts.routes}
+    assert ("RPC", "GetUser") in routes
+    assert ("RPC", "ListUsers") in routes
+
+    by_kind = {(e.name, e.kind) for e in facts.entities}
+    assert ("GetUserRequest", "Protobuf message") in by_kind
+    assert ("User", "Protobuf message") in by_kind
+
+
+def test_schemas_render_in_docs(tmp_path, schemas_fixture_repo):
+    facts = scan(schemas_fixture_repo)
+    out = tmp_path / "study-docs"
+    generate(facts, str(out))
+
+    api = (out / "07-api-and-integrations.md").read_text(encoding="utf-8")
+    assert "GraphQL" in api and "gRPC" in api
+
+    data = (out / "08-data-model.md").read_text(encoding="utf-8")
+    assert "Protobuf message" in data
+    assert "GraphQL type" in data
+
+
 def test_no_false_routes_in_plain_repo(tmp_path):
     bare = tmp_path / "bare"
     bare.mkdir()

@@ -45,9 +45,10 @@ and a committed sample lives in `examples/study-docs/`.
       with a clear message if `git` is missing or the clone fails.
 - [x] **Deep analyzers** (`project_to_study/analyzers.py`, roadmap Phase 2):
       extract concrete **API routes** (Express/Node, FastAPI/decorator, Flask,
-      Django `urls.py`, Go `net/http`) and **data entities** (Prisma,
-      SQLAlchemy, Django models, Mongoose, TypeORM, SQL `CREATE TABLE`). Routes
-      and entities are rendered as tables in `07-api-and-integrations.md` and
+      Django `urls.py`, Go `net/http`, gRPC `.proto`, GraphQL operations) and
+      **data entities** (Prisma, SQLAlchemy, Django models, Mongoose, TypeORM,
+      SQL `CREATE TABLE`, Protobuf `message`, GraphQL types). Routes and
+      entities are rendered as tables in `07-api-and-integrations.md` and
       `08-data-model.md`, with the source file as evidence, and feed the
       document planner's applicability decision.
 - [x] **`--style` option** (`project_to_study/style.py`): `standard` (default),
@@ -60,8 +61,8 @@ and a committed sample lives in `examples/study-docs/`.
 
 - [ ] Add LLM provider abstraction (Phase 3 of the roadmap). Keep evidence
       visible; never let the LLM invent deployment details.
-- [ ] Broaden analyzer coverage (gRPC, GraphQL schemas, more ORMs) and capture
-      route handler names / fields, not just paths and entity names.
+- [ ] Capture route handler names and entity fields (not just paths/names), and
+      add more ORMs (Sequelize, Peewee, GORM struct tags).
 
 ## How To Run
 
@@ -74,7 +75,7 @@ python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
 
 ## Handoff Notes
 
-- Commands run: `pytest -q` (44 passed); CLI generate + validate on the fixture
+- Commands run: `pytest -q` (47 passed); CLI generate + validate on the fixtures
   (exit 0); all four styles validate; remote-clone failure path exits 2.
 - Files added: `project_to_study/*.py` (incl. `source.py`, `analyzers.py`,
   `style.py`), `tests/*` (incl. `test_source.py`, `test_analyzers.py`,
