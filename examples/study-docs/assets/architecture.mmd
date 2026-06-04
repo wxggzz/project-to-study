@@ -1,0 +1,12 @@
+flowchart LR
+  User["User / CI"] --> CLI["cli.py"]
+  CLI --> Source["source.py (acquire)"]
+  Source --> Scanner["scanner.py"]
+  Scanner --> Facts["ProjectFacts (model.py)"]
+  Facts --> Analyzers["analyzers.py"]
+  Analyzers --> Facts
+  Facts --> Writer["writer.py + templates.py"]
+  Writer --> Docs["study-docs/"]
+  Writer --> Evidence["evidence.py"]
+  CLI --> Validate["validate.py"]
+  Docs --> Validate

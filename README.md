@@ -31,7 +31,8 @@ study-docs/
 
 Each manual has a clear audience and a practical next step. See
 [`docs/output-document-map.md`](docs/output-document-map.md) for what each file
-covers.
+covers, and [`examples/study-docs/`](examples/study-docs/) for a complete worked
+sample (the skill documenting this project's own CLI).
 
 ## Install
 

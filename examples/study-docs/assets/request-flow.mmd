@@ -1,0 +1,7 @@
+flowchart LR
+  Input["Path or Git URL"] --> Acquire["source.acquire"]
+  Acquire --> Scan["scanner.scan"]
+  Scan --> Analyze["analyzers.analyze"]
+  Analyze --> Write["writer.generate"]
+  Write --> Out["study-docs/"]
+  Write --> Evidence["evidence.write_evidence"]
