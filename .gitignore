@@ -1,18 +1,17 @@
 .DS_Store
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.venv/
-venv/
-dist/
-build/
-*.egg-info/
-# Ignore generated output at the repo root, but keep the committed demo
-# under examples/study-docs/.
+
+# Generated output (when running the skill from the repo root)
 /study-docs/
+
+# Local environment files
 .env
 .env.*
 !.env.example
 
+# Local dev artifacts (e.g. from the optional CLI on the `cli` branch)
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
