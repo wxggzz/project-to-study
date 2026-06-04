@@ -9,6 +9,11 @@ Markdown **+ a machine-readable `index.json`** — AI-ready and living in your r
 ![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-8A2BE2)
 ![Output](https://img.shields.io/badge/output-Markdown%20%2B%20JSON-blue)
 
+<p align="center">
+  <img src="docs/assets/hero.png" width="760"
+       alt="A generated study-docs package: an evidence/confidence summary (Verified/Inferred/Unknown/Needs confirmation), a document index, a quickstart, and a 'gaps it refused to invent' panel." />
+</p>
+
 **The problem:** AI doc generators hallucinate deployment steps and quietly go
 stale. **tracedocs** generates documentation where every operational
 claim is labelled `Verified` / `Inferred` / `Unknown` / `Needs confirmation` and
