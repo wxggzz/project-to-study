@@ -10,9 +10,11 @@ app.get("/health", (req, res) => {
   res.json({ ok: true, db: Boolean(databaseUrl), payments: Boolean(stripeKey) });
 });
 
-app.get("/users", (req, res) => {
+function listUsers(req, res) {
   res.json([]);
-});
+}
+
+app.get("/users", listUsers);
 
 app.post("/users", (req, res) => {
   res.status(201).json({});

@@ -51,7 +51,9 @@ and a committed sample lives in `examples/study-docs/`.
       entities are rendered as tables in `07-api-and-integrations.md` and
       `08-data-model.md`, with the source file as evidence, and feed the
       document planner's applicability decision. For block schemas (Prisma,
-      Protobuf, GraphQL) the entity tables also list field names.
+      Protobuf, GraphQL) the entity tables also list field names, and route
+      tables list the handler/view name when identifiable (Express, FastAPI,
+      Flask, Django, Go).
 - [x] **`--style` option** (`project_to_study/style.py`): `standard` (default),
       `concise` (drops optional prose), `teaching` (plain-English callouts +
       glossary), `ops` (front-loads operation/deployment/troubleshooting). Style
@@ -62,10 +64,10 @@ and a committed sample lives in `examples/study-docs/`.
 
 - [ ] Add LLM provider abstraction (Phase 3 of the roadmap). Keep evidence
       visible; never let the LLM invent deployment details.
-- [ ] Capture route handler names, and entity fields for indented-class ORMs
-      (SQLAlchemy/Django/Mongoose/TypeORM); add more ORMs (Sequelize, Peewee,
-      GORM struct tags). Block-schema field extraction (Prisma/Protobuf/GraphQL)
-      is done.
+- [ ] Capture entity fields for indented-class ORMs (SQLAlchemy/Django/
+      Mongoose/TypeORM); add more ORMs (Sequelize, Peewee, GORM struct tags).
+      Block-schema field extraction (Prisma/Protobuf/GraphQL) and route handler
+      names are done.
 
 ## How To Run
 

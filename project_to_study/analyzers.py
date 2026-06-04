@@ -44,26 +44,32 @@ _DISPLAY_CAP = 100
 
 # --- Route patterns ------------------------------------------------------- #
 
-# JS/TS: <anything>.get("/path", ...). Require the path to start with "/" to
-# avoid matching helpers like lodash `_.get(obj, "a.b")`.
+# JS/TS: <anything>.get("/path", handler?). Require the path to start with "/"
+# to avoid matching helpers like lodash `_.get(obj, "a.b")`. The optional
+# trailing group captures a named handler/middleware identifier (skipped for
+# inline arrow/function literals, whose next char is "(" or "f"/"a").
 _JS_ROUTE = re.compile(
-    r"\b\w+\.(get|post|put|patch|delete|options|head|all)\s*\(\s*['\"`](/[^'\"`]*)['\"`]",
+    r"\b\w+\.(get|post|put|patch|delete|options|head|all)\s*\(\s*['\"`](/[^'\"`]*)['\"`]"
+    r"(?:\s*,\s*([A-Za-z_$][\w$.]*)\s*[,)])?",
     re.IGNORECASE,
 )
-# Python decorators: @app.get("/path"), @router.post("/path")
+# Python decorators: @app.get("/path") followed by (async) def handler(...).
 _PY_DECOR = re.compile(
-    r"@\w+\.(get|post|put|patch|delete|options|head)\(\s*['\"]([^'\"]+)['\"]",
+    r"@\w+\.(get|post|put|patch|delete|options|head)\(\s*['\"]([^'\"]+)['\"]"
+    r"[\s\S]*?\bdef\s+(\w+)\s*\(",
     re.IGNORECASE,
 )
-# Flask: @app.route("/path", methods=["GET", "POST"])
+# Flask: @app.route("/path", methods=["GET", "POST"]) followed by def handler.
 _PY_FLASK = re.compile(
-    r"@\w+\.route\(\s*['\"]([^'\"]+)['\"](?:[^)]*methods\s*=\s*\[([^\]]*)\])?",
-    re.IGNORECASE | re.DOTALL,
+    r"@\w+\.route\(\s*['\"]([^'\"]+)['\"](?:[^)]*methods\s*=\s*\[([^\]]*)\])?\)"
+    r"[\s\S]*?\bdef\s+(\w+)\s*\(",
+    re.IGNORECASE,
 )
 # Django urls.py: path("route/", view), re_path(r"^x$", view)
-_DJANGO_URL = re.compile(r"\b(?:re_path|path|url)\(\s*r?['\"]([^'\"]*)['\"]")
+_DJANGO_URL = re.compile(
+    r"\b(?:re_path|path|url)\(\s*r?['\"]([^'\"]*)['\"]\s*,\s*([\w.]+)")
 # Go net/http: http.HandleFunc("/path", handler)
-_GO_HANDLEFUNC = re.compile(r'HandleFunc\(\s*"(/[^"]*)"')
+_GO_HANDLEFUNC = re.compile(r'HandleFunc\(\s*"(/[^"]*)"\s*(?:,\s*([\w.]+))?')
 # gRPC service methods: rpc GetUser (Req) returns (Resp);
 _PROTO_RPC = re.compile(r"\brpc\s+(\w+)\s*\(")
 # GraphQL operation blocks: type Query { ... } / Mutation / Subscription
@@ -137,38 +143,41 @@ def analyze(root: Path, facts: ProjectFacts) -> None:
             "model/schema definitions in source", Confidence.VERIFIED)
 
 
-def _add_route(routes: dict, method: str, path: str, rel: str, framework: str) -> None:
+def _add_route(routes: dict, method: str, path: str, rel: str, framework: str,
+               handler: str = "") -> None:
     method = method.upper() if method else "—"
     path = path.strip()
     if not path:
         return
     key = (method, path)
     routes.setdefault(key, Route(method=method, path=path,
-                                 evidence=f"{rel} ({framework})"))
+                                 evidence=f"{rel} ({framework})",
+                                 handler=handler or ""))
 
 
 def _extract_routes(text, ext, fname, rel, routes) -> None:
     if ext in {".js", ".jsx", ".ts", ".tsx"}:
-        for method, path in _JS_ROUTE.findall(text):
-            _add_route(routes, method, path, rel, "Express/Node")
+        for method, path, handler in _JS_ROUTE.findall(text):
+            _add_route(routes, method, path, rel, "Express/Node", handler)
     elif ext == ".go":
         # Gin/Echo style r.GET("/path") is covered by the JS pattern shape too,
         # but reuse the case-insensitive verb matcher here for Go uppercase.
-        for method, path in _JS_ROUTE.findall(text):
-            _add_route(routes, method, path, rel, "Go")
-        for path in _GO_HANDLEFUNC.findall(text):
-            _add_route(routes, "—", path, rel, "Go net/http")
+        for method, path, handler in _JS_ROUTE.findall(text):
+            _add_route(routes, method, path, rel, "Go", handler)
+        for path, handler in _GO_HANDLEFUNC.findall(text):
+            _add_route(routes, "—", path, rel, "Go net/http", handler)
     elif ext == ".py":
-        for method, path in _PY_DECOR.findall(text):
-            _add_route(routes, method, path, rel, "FastAPI/decorator")
-        for path, methods in _PY_FLASK.findall(text):
+        for method, path, handler in _PY_DECOR.findall(text):
+            _add_route(routes, method, path, rel, "FastAPI/decorator", handler)
+        for path, methods, handler in _PY_FLASK.findall(text):
             verbs = [m.strip().strip("'\"").upper()
                      for m in methods.split(",") if m.strip()] or ["GET"]
             for verb in verbs:
-                _add_route(routes, verb, path, rel, "Flask")
+                _add_route(routes, verb, path, rel, "Flask", handler)
         if fname == "urls.py":
-            for path in _DJANGO_URL.findall(text):
-                _add_route(routes, "—", "/" + path.lstrip("^/"), rel, "Django")
+            for path, handler in _DJANGO_URL.findall(text):
+                _add_route(routes, "—", "/" + path.lstrip("^/"), rel, "Django",
+                           handler)
     elif ext == ".proto":
         for method in _PROTO_RPC.findall(text):
             _add_route(routes, "RPC", method, rel, "gRPC")

@@ -72,7 +72,8 @@ class Route:
 
     method: str          # GET/POST/... or "—" when unknown
     path: str            # e.g. "/users/:id"
-    evidence: str        # "file.js:42 (Express)"
+    evidence: str        # "file.js (Express)"
+    handler: str = ""    # handler/view name when identifiable
 
 
 @dataclass

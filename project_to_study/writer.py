@@ -477,7 +477,9 @@ def _architecture(f: ProjectFacts, style: Style) -> str:
 
 def _api(f: ProjectFacts, style: Style) -> str:
     integ_rows = [(i, "External service", "dependencies") for i in f.integrations]
-    route_rows = [(r.method, f"`{r.path}`", r.evidence) for r in f.routes]
+    route_rows = [(r.method, f"`{r.path}`",
+                   f"`{r.handler}`" if r.handler else "—", r.evidence)
+                  for r in f.routes]
     route_note = ""
     if len(f.routes) >= 100:
         route_note = "_Showing the first 100 routes; more exist in the source._"
@@ -488,7 +490,7 @@ def _api(f: ProjectFacts, style: Style) -> str:
         "This project exposes or consumes interfaces. Routes below were "
         "extracted directly from the source; confirm any that look ambiguous.",
         T.heading(2, "Routes / Endpoints"),
-        T.table(["Method", "Path", "Source"], route_rows)
+        T.table(["Method", "Path", "Handler", "Source"], route_rows)
         or "_No routes were extracted automatically; review the route "
         "definitions in the source tree._",
         route_note,

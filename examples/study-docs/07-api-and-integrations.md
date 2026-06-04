@@ -6,11 +6,11 @@ This project exposes or consumes interfaces. Routes below were extracted directl
 
 ## Routes / Endpoints
 
-| Method | Path | Source |
-| --- | --- | --- |
-| GET | `/health` | src/index.js (Express/Node) |
-| GET | `/users` | src/index.js (Express/Node) |
-| POST | `/users` | src/index.js (Express/Node) |
+| Method | Path | Handler | Source |
+| --- | --- | --- | --- |
+| GET | `/health` | — | src/index.js (Express/Node) |
+| GET | `/users` | `listUsers` | src/index.js (Express/Node) |
+| POST | `/users` | — | src/index.js (Express/Node) |
 
 ## External Services
 

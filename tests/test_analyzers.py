@@ -4,20 +4,26 @@ from project_to_study.writer import generate
 
 def test_express_routes_extracted(fixture_repo):
     facts = scan(fixture_repo)
-    pairs = {(r.method, r.path) for r in facts.routes}
-    assert ("GET", "/health") in pairs
-    assert ("GET", "/users") in pairs
-    assert ("POST", "/users") in pairs
+    by_path = {(r.method, r.path): r for r in facts.routes}
+    assert ("GET", "/health") in by_path
+    assert ("GET", "/users") in by_path
+    assert ("POST", "/users") in by_path
     # Evidence points at the source file and framework.
     assert any("index.js" in r.evidence for r in facts.routes)
+    # Named handler captured; inline arrow function leaves handler empty.
+    assert by_path[("GET", "/users")].handler == "listUsers"
+    assert by_path[("GET", "/health")].handler == ""
 
 
 def test_fastapi_routes_extracted(py_fixture_repo):
     facts = scan(py_fixture_repo)
-    pairs = {(r.method, r.path) for r in facts.routes}
-    assert ("GET", "/items") in pairs
-    assert ("POST", "/items") in pairs
-    assert ("GET", "/users/{user_id}") in pairs
+    by_path = {(r.method, r.path): r for r in facts.routes}
+    assert ("GET", "/items") in by_path
+    assert ("POST", "/items") in by_path
+    assert ("GET", "/users/{user_id}") in by_path
+    # FastAPI handler names come from the def after the decorator.
+    assert by_path[("GET", "/items")].handler == "list_items"
+    assert by_path[("GET", "/users/{user_id}")].handler == "get_user"
 
 
 def test_sqlalchemy_entities_extracted(py_fixture_repo):
