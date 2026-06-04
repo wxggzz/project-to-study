@@ -46,54 +46,55 @@ flowchart LR
 完整、已校验的样例见 [`examples/study-docs/`](examples/study-docs/)(用本 skill
 给本项目自己的 CLI 生成的文档)。
 
+## 核心特性
+
+- **不幻觉保证** —— 每条操作/部署结论都附来源文件和置信度标签;无法溯源的步骤,
+  它拒绝写。
+- **AI 友好** —— 附带机器可读的 `index.json`,让 agent 也能消费这套文档,而不只是人。
+- **随仓库留存** —— 可版本化、在 PR 里 diff 的 Markdown,而非一次性产物。
+- **缺口被记录** —— 未知项和假设都写进 `_evidence/`,绝不糊弄。
+- **任意 agent 可用** —— 本质就是 `SKILL.md` + references;Claude Code、Codex
+  以及任何能读文件的 coding agent 都能跑。
+
 ## 安装
 
-### Claude Code
+### 方式 A —— Claude Code 插件(推荐)
 
-复制安装:
+在 Claude Code 里**分两条消息**执行:
+
+```text
+/plugin marketplace add https://github.com/wxggzz/tracedocs
+```
+
+```text
+/plugin install tracedocs@tracedocs
+```
+
+然后用 `/tracedocs:tracedocs` 调用(Claude Code 把插件 skill 命名为
+`/<插件>:<skill>`)。
+
+### 方式 B —— 复制到 skills 目录
+
+得到更短的 `/tracedocs` 命令,也是 Codex 等其它读取 `SKILL.md` 的 agent 的用法:
 
 ```bash
 git clone https://github.com/wxggzz/tracedocs
+# Claude Code:
 mkdir -p ~/.claude/skills/tracedocs
 cp -R tracedocs/SKILL.md tracedocs/references ~/.claude/skills/tracedocs/
-```
-
-开发时用软链(仓库更新即生效,无需重复复制):
-
-```bash
-git clone https://github.com/wxggzz/tracedocs
-cd tracedocs
-mkdir -p ~/.claude/skills
-ln -s "$(pwd)" ~/.claude/skills/tracedocs
-```
-
-然后**重载/重启 Claude Code** —— skill 在启动时被发现。
-
-### Codex
-
-复制安装:
-
-```bash
-git clone https://github.com/wxggzz/tracedocs
+# Codex(同理):
 mkdir -p ~/.codex/skills/tracedocs
 cp -R tracedocs/SKILL.md tracedocs/references ~/.codex/skills/tracedocs/
 ```
 
-开发时用软链:
-
-```bash
-git clone https://github.com/wxggzz/tracedocs
-cd tracedocs
-mkdir -p ~/.codex/skills
-ln -s "$(pwd)" ~/.codex/skills/tracedocs
-```
-
-然后**重载/重启 Codex** 以发现该 skill。
+然后**重载/重启**你的 agent —— skill 在启动时被发现。(开发时想用软链?
+`ln -s "$(pwd)/tracedocs" ~/.claude/skills/tracedocs`。)
 
 ## 使用
 
 ```text
-/tracedocs           # Claude Code
+/tracedocs           # 复制安装(方式 B)
+/tracedocs:tracedocs # 插件安装(方式 A)
 use tracedocs to document ./my-app
 ```
 
@@ -167,6 +168,9 @@ tracedocs/
     markdown-style-guide.md       # 格式 + 证据规范
     handoff-protocol.md           # 置信度标签 + agent 交接
     templates/                    # 每个输出文档一个有观点的模板
+  .claude-plugin/marketplace.json # Claude Code 插件市场清单
+  plugins/tracedocs/              # 插件版的 skill 副本(见 scripts/sync-plugin.sh)
+  scripts/sync-plugin.sh          # 把根目录 SKILL.md + references 同步进插件
   prompts/generate-study-docs.md  # 可直接粘贴的调用提示词
   docs/output-document-map.md     # 每个生成文档的用途
   examples/study-docs/            # 一个完整、已校验的样例

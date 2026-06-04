@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "tracedocs",
+  "description": "Evidence-grounded project docs that cite their sources — a Claude Code skill.",
+  "owner": {
+    "name": "wxggzz",
+    "url": "https://github.com/wxggzz"
+  },
+  "plugins": [
+    {
+      "name": "tracedocs",
+      "description": "Turn any codebase into evidence-grounded Markdown docs + an AI-ready index.json. Cites every claim; never invents deployment steps.",
+      "source": "./plugins/tracedocs",
+      "category": "productivity",
+      "tags": ["documentation", "codebase", "onboarding", "evidence", "ai-agents", "skill"]
+    }
+  ]
+}

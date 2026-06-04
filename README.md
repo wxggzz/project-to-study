@@ -48,54 +48,59 @@ plainly instead of guessed:
 See [`examples/study-docs/`](examples/study-docs/) for a complete, validated
 sample (the skill documenting this project's own CLI).
 
+## Key Features
+
+- **No-hallucination guarantee** — every operational/deployment claim cites a
+  source file and a confidence label; it refuses to write steps it can't prove.
+- **AI-ready** — ships a machine-readable `index.json` so agents can consume the
+  docs, not just humans.
+- **Lives in your repo** — durable Markdown that versions and diffs in PRs, not a
+  one-off artifact.
+- **Documents the gaps** — unknowns and assumptions go in `_evidence/`, never
+  glossed over.
+- **Works with any agent** — it's plain `SKILL.md` + references; Claude Code,
+  Codex, and any coding agent that can read files can run it.
+
 ## Install
 
-### Claude Code
+### Option A — Claude Code plugin (recommended)
 
-Copy install:
+Run these as **two separate** Claude Code messages:
+
+```text
+/plugin marketplace add https://github.com/wxggzz/tracedocs
+```
+
+```text
+/plugin install tracedocs@tracedocs
+```
+
+Then invoke it as `/tracedocs:tracedocs` (Claude Code namespaces plugin skills
+as `/<plugin>:<skill>`).
+
+### Option B — Copy into your skills folder
+
+Gives the shorter `/tracedocs` command, and is the way to use it from Codex or
+any other agent that reads `SKILL.md`:
 
 ```bash
 git clone https://github.com/wxggzz/tracedocs
+# Claude Code:
 mkdir -p ~/.claude/skills/tracedocs
 cp -R tracedocs/SKILL.md tracedocs/references ~/.claude/skills/tracedocs/
-```
-
-Live-link install for development:
-
-```bash
-git clone https://github.com/wxggzz/tracedocs
-cd tracedocs
-mkdir -p ~/.claude/skills
-ln -s "$(pwd)" ~/.claude/skills/tracedocs
-```
-
-Then **reload/restart Claude Code** — skills are discovered at startup.
-
-### Codex
-
-Copy install:
-
-```bash
-git clone https://github.com/wxggzz/tracedocs
+# Codex (same idea):
 mkdir -p ~/.codex/skills/tracedocs
 cp -R tracedocs/SKILL.md tracedocs/references ~/.codex/skills/tracedocs/
 ```
 
-Live-link install for development:
-
-```bash
-git clone https://github.com/wxggzz/tracedocs
-cd tracedocs
-mkdir -p ~/.codex/skills
-ln -s "$(pwd)" ~/.codex/skills/tracedocs
-```
-
-Then **reload/restart Codex** so it can discover the skill.
+Then **reload/restart** your agent — skills are discovered at startup. (Prefer a
+live link during development? `ln -s "$(pwd)/tracedocs" ~/.claude/skills/tracedocs`.)
 
 ## Use
 
 ```text
-/tracedocs           # Claude Code
+/tracedocs           # copy install (Option B)
+/tracedocs:tracedocs # plugin install (Option A)
 use tracedocs to document ./my-app
 ```
 
@@ -173,6 +178,9 @@ tracedocs/
     markdown-style-guide.md       # formatting + evidence conventions
     handoff-protocol.md           # confidence labels + agent handoff
     templates/                    # one opinionated scaffold per output document
+  .claude-plugin/marketplace.json # Claude Code plugin marketplace manifest
+  plugins/tracedocs/              # plugin copy of the skill (see scripts/sync-plugin.sh)
+  scripts/sync-plugin.sh          # copy root SKILL.md + references into the plugin
   prompts/generate-study-docs.md  # ready-to-paste invocation prompt
   docs/output-document-map.md     # what each generated document is for
   examples/study-docs/            # a complete, validated sample

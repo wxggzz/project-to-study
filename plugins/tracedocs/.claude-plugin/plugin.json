@@ -1,0 +1,14 @@
+{
+  "name": "tracedocs",
+  "version": "1.0.0",
+  "description": "Turn any codebase into evidence-grounded Markdown docs + an AI-ready index.json. Cites every claim; never invents deployment steps.",
+  "skills": "./skills/",
+  "author": {
+    "name": "wxggzz",
+    "url": "https://github.com/wxggzz"
+  },
+  "homepage": "https://github.com/wxggzz/tracedocs",
+  "repository": "https://github.com/wxggzz/tracedocs",
+  "license": "MIT",
+  "keywords": ["documentation", "codebase", "onboarding", "evidence", "ai-agents", "claude-skill"]
+}
