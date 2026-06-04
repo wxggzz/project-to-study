@@ -72,7 +72,8 @@ class Route:
 
     method: str          # GET/POST/... or "—" when unknown
     path: str            # e.g. "/users/:id"
-    evidence: str        # "file.js:42 (Express)"
+    evidence: str        # "file.js (Express)"
+    handler: str = ""    # handler/view name when identifiable
 
 
 @dataclass
@@ -82,6 +83,7 @@ class Entity:
     name: str
     kind: str            # e.g. "SQLAlchemy model", "Prisma model", "SQL table"
     evidence: str        # source file (relative path)
+    fields: List[str] = field(default_factory=list)  # field names when known
 
 
 @dataclass

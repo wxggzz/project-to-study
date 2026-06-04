@@ -18,6 +18,6 @@
 ## Run Metadata
 
 - Tool: project-to-study v0.1.0
-- Generated at: 2026-06-04T11:24:40
+- Generated at: 2026-06-04T15:32:34
 - Style: standard
 - Mode: deterministic (no LLM)

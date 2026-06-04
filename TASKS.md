@@ -45,11 +45,15 @@ and a committed sample lives in `examples/study-docs/`.
       with a clear message if `git` is missing or the clone fails.
 - [x] **Deep analyzers** (`project_to_study/analyzers.py`, roadmap Phase 2):
       extract concrete **API routes** (Express/Node, FastAPI/decorator, Flask,
-      Django `urls.py`, Go `net/http`) and **data entities** (Prisma,
-      SQLAlchemy, Django models, Mongoose, TypeORM, SQL `CREATE TABLE`). Routes
-      and entities are rendered as tables in `07-api-and-integrations.md` and
+      Django `urls.py`, Go `net/http`, gRPC `.proto`, GraphQL operations) and
+      **data entities** (Prisma, SQLAlchemy, Django models, Mongoose, TypeORM,
+      SQL `CREATE TABLE`, Protobuf `message`, GraphQL types). Routes and
+      entities are rendered as tables in `07-api-and-integrations.md` and
       `08-data-model.md`, with the source file as evidence, and feed the
-      document planner's applicability decision.
+      document planner's applicability decision. For block schemas (Prisma,
+      Protobuf, GraphQL) the entity tables also list field names, and route
+      tables list the handler/view name when identifiable (Express, FastAPI,
+      Flask, Django, Go).
 - [x] **`--style` option** (`project_to_study/style.py`): `standard` (default),
       `concise` (drops optional prose), `teaching` (plain-English callouts +
       glossary), `ops` (front-loads operation/deployment/troubleshooting). Style
@@ -60,8 +64,10 @@ and a committed sample lives in `examples/study-docs/`.
 
 - [ ] Add LLM provider abstraction (Phase 3 of the roadmap). Keep evidence
       visible; never let the LLM invent deployment details.
-- [ ] Broaden analyzer coverage (gRPC, GraphQL schemas, more ORMs) and capture
-      route handler names / fields, not just paths and entity names.
+- [ ] Capture entity fields for indented-class ORMs (SQLAlchemy/Django/
+      Mongoose/TypeORM); add more ORMs (Sequelize, Peewee, GORM struct tags).
+      Block-schema field extraction (Prisma/Protobuf/GraphQL) and route handler
+      names are done.
 
 ## How To Run
 
@@ -74,8 +80,27 @@ python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
 
 ## Handoff Notes
 
-- Commands run: `pytest -q` (44 passed); CLI generate + validate on the fixture
+- Commands run: `pytest -q` (59 passed); CLI generate + validate on the fixtures
   (exit 0); all four styles validate; remote-clone failure path exits 2.
+- PR #1 review (Codex): fixed 4 analyzer findings — multi-decorator FastAPI
+  routes, Express middleware-vs-handler, Flask `methods=[...]` with extra
+  kwargs, and Protobuf nested-block (`oneof`) field truncation; added regression
+  tests for each.
+- PR #1 re-review (Codex): fixed 3 follow-up boundary bugs — commented-out
+  decorators no longer bind to a later def (line-anchored), Flask methods after
+  a nested-call kwarg are parsed (paren-balanced args), and block/paren scanning
+  now skips strings and comments (`_balanced`/`_skip_string`), so braces inside
+  strings no longer truncate fields. Regression tests added for each.
+- PR #1 third review (Codex): fixed 2 more — nested Protobuf `message` fields no
+  longer leak into the outer message (`_proto_fields` skips nested message/enum
+  but descends into `oneof`), and the route handler name survives long/multi-line
+  decorator args (`_handler_after` uses a blank-line bound, not a char window).
+  Regression tests added for each.
+- PR #1 fourth review (Codex): unified FastAPI handling with Flask — read the
+  full decorator call with the paren-balanced scanner and resolve the handler
+  only after the closing `)`, so a `def` inside a decorator argument string
+  (e.g. a `description=`) is no longer mistaken for the handler. Regression test
+  added.
 - Files added: `project_to_study/*.py` (incl. `source.py`, `analyzers.py`,
   `style.py`), `tests/*` (incl. `test_source.py`, `test_analyzers.py`,
   `test_style.py`), the `tests/fixtures/sample-py-api/` FastAPI+SQLAlchemy

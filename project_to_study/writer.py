@@ -477,7 +477,9 @@ def _architecture(f: ProjectFacts, style: Style) -> str:
 
 def _api(f: ProjectFacts, style: Style) -> str:
     integ_rows = [(i, "External service", "dependencies") for i in f.integrations]
-    route_rows = [(r.method, f"`{r.path}`", r.evidence) for r in f.routes]
+    route_rows = [(r.method, f"`{r.path}`",
+                   f"`{r.handler}`" if r.handler else "—", r.evidence)
+                  for r in f.routes]
     route_note = ""
     if len(f.routes) >= 100:
         route_note = "_Showing the first 100 routes; more exist in the source._"
@@ -488,7 +490,7 @@ def _api(f: ProjectFacts, style: Style) -> str:
         "This project exposes or consumes interfaces. Routes below were "
         "extracted directly from the source; confirm any that look ambiguous.",
         T.heading(2, "Routes / Endpoints"),
-        T.table(["Method", "Path", "Source"], route_rows)
+        T.table(["Method", "Path", "Handler", "Source"], route_rows)
         or "_No routes were extracted automatically; review the route "
         "definitions in the source tree._",
         route_note,
@@ -505,16 +507,24 @@ def _api(f: ProjectFacts, style: Style) -> str:
     ])
 
 
+def _fmt_fields(fields: list) -> str:
+    if not fields:
+        return "—"
+    shown = ", ".join(fields[:8])
+    return shown + (" …" if len(fields) > 8 else "")
+
+
 def _data_model(f: ProjectFacts, style: Style) -> str:
     store_rows = [(s, "dependencies/schema") for s in f.data_stores]
-    entity_rows = [(e.name, e.kind, f"`{e.evidence}`") for e in f.entities]
+    entity_rows = [(e.name, e.kind, _fmt_fields(e.fields), f"`{e.evidence}`")
+                   for e in f.entities]
     return T.join_sections([
         T.heading(1, "Data Model"),
         T.heading(2, "Storage Overview"),
         T.table(["Data store", "Evidence"], store_rows)
         or "_No data store detected from dependencies._",
         T.heading(2, "Important Entities"),
-        T.table(["Entity", "Kind", "Source"], entity_rows)
+        T.table(["Entity", "Kind", "Fields", "Source"], entity_rows)
         or "_No entities were extracted automatically. Review the schema or "
         "model files to enumerate entities._",
         T.heading(2, "Migrations"),

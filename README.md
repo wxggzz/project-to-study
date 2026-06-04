@@ -158,10 +158,12 @@ environment variable *names only* (never values) and never invents deployment
 steps; gaps are written into `study-docs/_evidence/`.
 
 It also performs **deep extraction**: concrete API routes (Express, FastAPI,
-Flask, Django, Go `net/http`) and data entities (Prisma, SQLAlchemy, Django
-models, Mongoose, TypeORM, SQL `CREATE TABLE`) are pulled from the source and
-listed in `07-api-and-integrations.md` and `08-data-model.md`, each with its
-source file as evidence.
+Flask, Django, Go `net/http`, gRPC `.proto`, GraphQL operations) and data
+entities (Prisma, SQLAlchemy, Django models, Mongoose, TypeORM, SQL
+`CREATE TABLE`, Protobuf `message`, GraphQL types) are pulled from the source
+and listed in `07-api-and-integrations.md` and `08-data-model.md`, each with its
+source file as evidence. For block schemas (Prisma, Protobuf, GraphQL) the
+entity tables also list field names.
 
 ## MVP Definition
 
